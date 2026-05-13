@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+:root {
+  /* Primary Colors */
+  --color-primary: #003371;
+  --color-primary-light: #005691;
+  --color-primary-dark: #001F47;
+
+  /* Accent Colors */
+  --color-accent-green: #00875A;
+  --color-accent-orange: #E07B39;
+
+  /* Background */
+  --color-bg: #FFFFFF;
+  --color-bg-subtle: #F4F7FA;
+  --color-bg-card: #FFFFFF;
+
+  /* Text */
+  --color-text: #333333;
+  --color-text-muted: #666666;
+  --color-text-light: #999999;
+
+  /* Border */
+  --color-border: #E2E8F0;
+  --color-border-light: #F1F5F9;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(0, 51, 113, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 51, 113, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 51, 113, 0.12);
+
+  /* Font */
+  --font-cn: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-en: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-cn);
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-subtle);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary-light);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Button base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  outline: none;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+}
+.btn-primary:hover {
+  background: var(--color-primary-light);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+.btn-secondary:hover {
+  background: var(--color-bg-subtle);
+}
+
+/* Card */
+.card {
+  background: var(--color-bg-card);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border-light);
+}

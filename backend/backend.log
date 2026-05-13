@@ -1,0 +1,268 @@
+2026-05-09 14:24:19,403 [INFO] root - [PPT Agent] Database initialized
+ * Serving Flask app 'app'
+ * Debug mode: on
+2026-05-09 14:24:20,686 [INFO] werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5031
+ * Running on http://198.18.0.1:5031
+2026-05-09 14:24:20,691 [INFO] werkzeug - [33mPress CTRL+C to quit[0m
+2026-05-09 14:24:20,700 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 14:24:21,291 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 14:24:21,308 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 14:24:21,311 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 14:58:16,689 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\controllers\\ppt_controller.py', reloading
+2026-05-09 14:58:17,121 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 14:58:18,132 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 14:58:18,152 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 14:58:18,155 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 14:59:09,075 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\services\\ai_generation_service.py', reloading
+2026-05-09 14:59:09,264 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 14:59:10,041 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 14:59:10,055 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 14:59:10,059 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:00:32,558 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:00:32] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:00:32,566 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:00:32] "GET /api/ppt/projects/0eaddc13 HTTP/1.1" 200 -
+2026-05-09 15:00:32,585 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:00:32] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:00:32,597 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:00:32] "GET /api/ppt/projects/0eaddc13 HTTP/1.1" 200 -
+2026-05-09 15:00:32,608 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:00:32] "GET /api/ppt/projects/0eaddc13/pages HTTP/1.1" 200 -
+2026-05-09 15:00:32,625 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:00:32] "GET /api/ppt/projects/0eaddc13/pages HTTP/1.1" 200 -
+2026-05-09 15:00:59,662 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:00:59] "GET /api/ppt/projects/0eaddc13/pages HTTP/1.1" 200 -
+2026-05-09 15:01:20,269 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:01:20] "GET /api/ppt/projects/0eaddc13/pages HTTP/1.1" 200 -
+2026-05-09 15:01:48,458 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\models\\page.py', reloading
+2026-05-09 15:01:48,704 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:01:49,779 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:01:49,806 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:01:49,813 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:12:38,200 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\controllers\\ppt_controller.py', reloading
+2026-05-09 15:12:38,437 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:12:39,173 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:12:39,190 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:12:39,196 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:14:09,345 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\services\\outline_generator.py', reloading
+2026-05-09 15:14:09,596 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:14:10,487 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:14:10,505 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:14:10,508 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:15:52,013 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\test_outline.py', reloading
+2026-05-09 15:15:52,246 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:15:53,004 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:15:53,021 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:15:53,024 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:17:16,883 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\test_outline.py', reloading
+2026-05-09 15:17:17,097 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:17:17,879 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:17:17,897 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:17:17,900 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:17:46,928 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\test_outline.py', reloading
+2026-05-09 15:17:47,169 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:17:47,912 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:17:47,930 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:17:47,934 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:18:05,235 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\test_outline.py', reloading
+2026-05-09 15:18:05,470 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:18:06,233 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:18:06,249 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:18:06,252 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:18:32,914 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\test_outline.py', reloading
+2026-05-09 15:18:33,141 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:18:33,957 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:18:33,974 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:18:33,977 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:19:27,014 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:19:27] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:19:27,032 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:19:27] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:20:00,769 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:20:00] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:20:00,785 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:20:00] "GET /api/ppt/projects/0eaddc13 HTTP/1.1" 200 -
+2026-05-09 15:20:00,832 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:20:00] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:20:00,835 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:20:00] "GET /api/ppt/projects/0eaddc13 HTTP/1.1" 200 -
+2026-05-09 15:20:00,849 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:20:00] "GET /api/ppt/projects/0eaddc13/pages HTTP/1.1" 200 -
+2026-05-09 15:20:00,875 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:20:00] "GET /api/ppt/projects/0eaddc13/pages HTTP/1.1" 200 -
+2026-05-09 15:22:00,783 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\test_pages.py', reloading
+2026-05-09 15:22:01,014 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:22:01,916 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:22:01,934 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:22:01,936 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:22:11,607 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:22:11] "GET /api/ppt/projects/0eaddc13/pages HTTP/1.1" 200 -
+2026-05-09 15:23:16,234 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\test_pages.py', reloading
+2026-05-09 15:23:16,436 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:23:17,192 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:23:17,205 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:23:17,209 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:23:32,701 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:23:32] "PUT /api/ppt/projects/0eaddc13 HTTP/1.1" 200 -
+2026-05-09 15:23:34,769 [INFO] controllers.ppt_controller - [PPT] Task ppt_gen_d9fc8990: Generating 5 pages with template=government_blue
+2026-05-09 15:24:44,573 [INFO] services.ai_generation_service - [AI Gen] Saved SVG: D:\AI\ppt-agent\uploads\projects\0eaddc13\slide_01.svg
+2026-05-09 15:25:12,572 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\test_pages.py', reloading
+2026-05-09 15:25:12,834 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:25:13,654 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:25:13,674 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:25:13,677 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:25:32,772 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:25:32] "PUT /api/ppt/projects/0eaddc13 HTTP/1.1" 200 -
+2026-05-09 15:26:03,033 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\test_pages.py', reloading
+2026-05-09 15:26:03,269 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:26:04,023 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:26:04,039 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:26:04,043 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:26:35,919 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:26:35] "GET /api/ppt/projects/0eaddc13 HTTP/1.1" 200 -
+2026-05-09 15:26:37,986 [INFO] controllers.ppt_controller - [PPT] Task ppt_gen_7177f4bc: Generating 5 pages with template=government_blue
+2026-05-09 15:27:28,793 [INFO] services.ai_generation_service - [AI Gen] Saved SVG: D:\AI\ppt-agent\uploads\projects\0eaddc13\slide_01.svg
+2026-05-09 15:27:38,994 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\test_pages.py', reloading
+2026-05-09 15:27:39,232 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:27:39,920 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:27:39,932 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:27:39,936 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:27:57,774 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:27:57] "GET /api/ppt/projects/0eaddc13 HTTP/1.1" 200 -
+2026-05-09 15:27:59,848 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:27:59] "GET /api/ppt/projects/0eaddc13/pages HTTP/1.1" 200 -
+2026-05-09 15:29:19,081 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\test_pages.py', reloading
+2026-05-09 15:29:19,318 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:29:20,250 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:29:20,268 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:29:20,270 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:30:51,742 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:30:51] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:30:51,746 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:30:51] "GET /api/ppt/projects/0eaddc13 HTTP/1.1" 200 -
+2026-05-09 15:30:51,765 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:30:51] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:30:51,779 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:30:51] "GET /api/ppt/projects/0eaddc13 HTTP/1.1" 200 -
+2026-05-09 15:30:51,791 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:30:51] "GET /api/ppt/projects/0eaddc13/pages HTTP/1.1" 200 -
+2026-05-09 15:30:51,809 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:30:51] "GET /api/ppt/projects/0eaddc13/pages HTTP/1.1" 200 -
+2026-05-09 15:30:54,516 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:30:54] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:30:54,541 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:30:54] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:01,322 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:01] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:01,348 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:01] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:02,570 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:02] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:02,592 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:02] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:03,526 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:03] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:03,552 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:03] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:04,186 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:04] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:04,213 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:04] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:08,793 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:08] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:08,794 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:08] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:31:08,809 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:08] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:08,817 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:08] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:31:08,825 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:08] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:31:08,837 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:08] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:31:09,037 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:09] "GET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1" 200 -
+2026-05-09 15:31:09,045 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:09] "GET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1" 200 -
+2026-05-09 15:31:09,048 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:09] "GET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1" 200 -
+2026-05-09 15:31:09,052 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:09] "[36mGET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:09,067 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:09] "[36mGET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:09,067 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:09] "[36mGET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:29,459 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:29] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:29,479 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:29] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:30,346 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:30] "GET /api/ppt/projects/0eaddc13 HTTP/1.1" 200 -
+2026-05-09 15:31:30,354 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:30] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:30,379 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:30] "GET /api/ppt/projects/0eaddc13 HTTP/1.1" 200 -
+2026-05-09 15:31:30,384 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:30] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:30,393 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:30] "GET /api/ppt/projects/0eaddc13/pages HTTP/1.1" 200 -
+2026-05-09 15:31:30,413 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:30] "GET /api/ppt/projects/0eaddc13/pages HTTP/1.1" 200 -
+2026-05-09 15:31:33,408 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:33] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:33,434 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:33] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:34,428 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:34] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:31:34,431 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:34] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:34,464 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:34] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:31:34,467 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:34] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:34,474 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:34] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:31:34,500 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:34] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:31:34,519 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:34] "[36mGET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:34,528 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:34] "[36mGET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:34,530 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:34] "[36mGET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:34,540 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:34] "[36mGET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:34,552 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:34] "[36mGET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:34,555 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:34] "[36mGET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:37,260 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:37] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:37,275 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:37] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:38,023 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:38] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:31:38,025 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:38] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:38,068 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:38] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:31:38,074 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:38] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:38,090 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:38] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:31:38,111 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:38] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:31:38,144 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:38] "[36mGET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:38,146 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:38] "[36mGET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:38,147 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:38] "[36mGET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:38,178 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:38] "[36mGET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:38,181 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:38] "[36mGET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:38,182 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:38] "[36mGET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:43,819 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:43] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:43,835 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:43] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:44,619 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:44] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:31:44,621 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:44] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:44,659 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:44] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:31:44,662 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:44] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:44,672 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:44] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:31:44,697 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:44] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:31:44,719 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:44] "[36mGET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:44,722 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:44] "[36mGET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:44,723 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:44] "[36mGET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:44,747 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:44] "[36mGET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:44,758 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:44] "[36mGET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:44,759 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:44] "[36mGET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:46,078 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:46] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:46,095 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:46] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:31:47,022 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:47] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:31:47,023 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:47] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:47,061 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:47] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:31:47,068 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:47] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:31:47,081 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:47] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:31:47,101 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:47] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:31:47,120 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:47] "[36mGET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:47,126 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:47] "[36mGET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:47,130 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:47] "[36mGET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:47,145 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:47] "[36mGET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:47,151 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:47] "[36mGET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:31:47,159 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:31:47] "[36mGET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:34:17,101 [INFO] werkzeug -  * Detected change in 'D:\\AI\\ppt-agent\\backend\\test_pages.py', reloading
+2026-05-09 15:34:17,328 [INFO] werkzeug -  * Restarting with watchdog (windowsapi)
+2026-05-09 15:34:18,164 [INFO] root - [PPT Agent] Database initialized
+2026-05-09 15:34:18,180 [WARNING] werkzeug -  * Debugger is active!
+2026-05-09 15:34:18,184 [INFO] werkzeug -  * Debugger PIN: 142-589-927
+2026-05-09 15:34:33,736 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:34:33] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:34:33,763 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:34:33] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:39:23,709 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:23] "GET /api/ppt/projects/0eaddc13 HTTP/1.1" 200 -
+2026-05-09 15:39:23,710 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:23] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:39:23,727 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:23] "GET /api/ppt/projects/0eaddc13 HTTP/1.1" 200 -
+2026-05-09 15:39:23,727 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:23] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:39:23,741 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:23] "GET /api/ppt/projects/0eaddc13/pages HTTP/1.1" 200 -
+2026-05-09 15:39:23,753 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:23] "GET /api/ppt/projects/0eaddc13/pages HTTP/1.1" 200 -
+2026-05-09 15:39:25,634 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:25] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:39:25,655 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:25] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:39:26,547 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:26] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:39:26,551 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:26] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:39:26,577 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:26] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:39:26,582 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:26] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:39:26,592 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:26] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:39:26,606 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:26] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:39:26,892 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:26] "GET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1" 200 -
+2026-05-09 15:39:26,895 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:26] "GET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1" 200 -
+2026-05-09 15:39:26,896 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:26] "GET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1" 200 -
+2026-05-09 15:39:26,924 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:26] "[36mGET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:39:26,929 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:26] "[36mGET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:39:26,929 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:39:26] "[36mGET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:40:17,475 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:17] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:40:17,494 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:17] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:40:20,187 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:20] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:40:20,192 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:20] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:40:20,206 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:20] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:40:20,210 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:20] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:40:20,220 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:20] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:40:20,233 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:20] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:40:20,267 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:20] "[36mGET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:40:20,269 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:20] "[36mGET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:40:20,269 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:20] "[36mGET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:40:20,288 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:20] "[36mGET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:40:20,297 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:20] "[36mGET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:40:20,305 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:20] "[36mGET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:40:22,096 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:22] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:40:22,112 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:22] "GET /api/ppt/projects HTTP/1.1" 200 -
+2026-05-09 15:40:22,846 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:22] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:40:22,848 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:22] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:40:22,868 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:22] "GET /api/ppt/projects/89bc1845 HTTP/1.1" 200 -
+2026-05-09 15:40:22,871 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:22] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:40:22,877 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:22] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:40:22,894 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:22] "GET /api/ppt/projects/89bc1845/pages HTTP/1.1" 200 -
+2026-05-09 15:40:22,923 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:22] "[36mGET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:40:22,927 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:22] "[36mGET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:40:22,928 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:22] "[36mGET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:40:22,948 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:22] "[36mGET /api/ppt/files/89bc1845/slide_01.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:40:22,949 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:22] "[36mGET /api/ppt/files/89bc1845/slide_02.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:40:22,952 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:40:22] "[36mGET /api/ppt/files/89bc1845/slide_03.svg HTTP/1.1[0m" 304 -
+2026-05-09 15:43:17,748 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:43:17] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 15:43:17,761 [INFO] werkzeug - 127.0.0.1 - - [09/May/2026 15:43:17] "GET /api/ppt/templates/layouts HTTP/1.1" 200 -
+2026-05-09 16:21:33,179 [INFO] werkzeug -  * Detected change in 'C:\\Users\\JJLAM\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask\\__main__.py', reloading
