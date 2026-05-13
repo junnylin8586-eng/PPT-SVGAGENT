@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#003371"/>
+      <stop offset="100%" style="stop-color:#005691"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00875A"/>
+      <stop offset="100%" style="stop-color:#00A86B"/>
+    </linearGradient>
+    <pattern id="circuitPattern" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M0 30h20M40 30h20M30 0v20M30 40v20" stroke="#003371" stroke-width="0.5" opacity="0.08"/>
+      <circle cx="30" cy="30" r="2" fill="none" stroke="#003371" opacity="0.06"/>
+      <path d="M10 10l10 10M50 10l-10 10M10 50l10-10M50 50l-10-10" stroke="#003371" stroke-width="0.3" opacity="0.05"/>
+    </pattern>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#F5F7FA"/>
+  <rect width="1280" height="720" fill="url(#circuitPattern)"/>
+  
+  <!-- Header Bar -->
+  <rect x="0" y="0" width="1280" height="80" fill="url(#headerGrad)"/>
+  <text x="50" y="50" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" fill="#FFFFFF" opacity="0.7">MARKET ANALYSIS REPORT</text>
+  <text x="1230" y="50" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" fill="#FFFFFF" opacity="0.7" text-anchor="end">P.05</text>
+  
+  <!-- Page Title -->
+  <text x="50" y="130" font-family="system-ui, Noto Sans SC, sans-serif" font-size="32" font-weight="bold" fill="#003371">2026年全球智能手机区域市场分析</text>
+  <text x="50" y="165" font-family="system-ui, Noto Sans SC, sans-serif" font-size="16" fill="#005691">Regional Market Share &amp; Growth Dynamics</text>
+  
+  <!-- Main Content Area -->
+  <!-- Left Section: Regional Bar Chart -->
+  <g transform="translate(50, 200)">
+    <text x="0" y="0" font-family="system-ui, Noto Sans SC, sans-serif" font-size="18" font-weight="bold" fill="#003371">各区域市场份额</text>
+    
+    <!-- Regional Bars -->
+    <g transform="translate(0, 30)">
+      <!-- Asia Pacific -->
+      <text x="0" y="20" font-family="system-ui, Noto Sans SC, sans-serif" font-size="13" fill="#333">亚太地区</text>
+      <rect x="100" y="8" width="340" height="24" rx="4" fill="#003371"/>
+      <text x="450" y="25" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" font-weight="bold" fill="#003371">45%</text>
+      <text x="490" y="25" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#00875A">▲5.2%</text>
+      
+      <!-- Europe -->
+      <text x="0" y="65" font-family="system-ui, Noto Sans SC, sans-serif" font-size="13" fill="#333">欧洲地区</text>
+      <rect x="100" y="53" width="180" height="24" rx="4" fill="#005691"/>
+      <text x="290" y="70" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" font-weight="bold" fill="#005691">22%</text>
+      <text x="330" y="70" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#00875A">▲2.1%</text>
+      
+      <!-- North America -->
+      <text x="0" y="110" font-family="system-ui, Noto Sans SC, sans-serif" font-size="13" fill="#333">北美地区</text>
+      <rect x="100" y="98" width="150" height="24" rx="4" fill="#4A90A4"/>
+      <text x="260" y="115" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" font-weight="bold" fill="#4A90A4">18%</text>
+      <text x="300" y="115" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#CC0000">▼1.5%</text>
+      
+      <!-- Latin America -->
+      <text x="0" y="155" font-family="system-ui, Noto Sans SC, sans-serif" font-size="13" fill="#333">拉美地区</text>
+      <rect x="100" y="143" width="100" height="24" rx="4" fill="#00875A"/>
+      <text x="210" y="160" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" font-weight="bold" fill="#00875A">12%</text>
+      <text x="250" y="160" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#00875A">▲8.3%</text>
+      
+      <!-- Middle East & Africa -->
+      <text x="0" y="200" font-family="system-ui, Noto Sans SC, sans-serif" font-size="13" fill="#333">中东非地区</text>
+      <rect x="100" y="188" width="60" height="24" rx="4" fill="#00A86B"/>
+      <text x="170" y="205" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" font-weight="bold" fill="#00A86B">8%</text>
+      <text x="210" y="205" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#00875A">▲12.5%</text>
+      
+      <!-- Others -->
+      <text x="0" y="245" font-family="system-ui, Noto Sans SC, sans-serif" font-size="13" fill="#333">其他地区</text>
+      <rect x="100" y="233" width="30" height="24" rx="4" fill="#8B9DC3"/>
+      <text x="140" y="250" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" font-weight="bold" fill="#8B9DC3">3%</text>
+      <text x="180" y="250" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#CC0000">▼0.8%</text>
+    </g>
+  </g>
+  
+  <!-- Center Section: Donut Chart -->
+  <g transform="translate(580, 280)">
+    <text x="85" y="-40" font-family="system-ui, Noto Sans SC, sans-serif" font-size="18" font-weight="bold" fill="#003371">区域贡献度</text>
+    
+    <!-- Donut Chart -->
+    <circle cx="85" cy="85" r="70" fill="none" stroke="#003371" stroke-width="35" stroke-dasharray="175 264" stroke-dashoffset="0" transform="rotate(-90 85 85)"/>
+    <circle cx="85" cy="85" r="70" fill="none" stroke="#005691" stroke-width="35" stroke-dasharray="86 353" stroke-dashoffset="-175" transform="rotate(-90 85 85)"/>
+    <circle cx="85" cy="85" r="70" fill="none" stroke="#4A90A4" stroke-width="35" stroke-dasharray="70 369" stroke-dashoffset="-261" transform="rotate(-90 85 85)"/>
+    <circle cx="85" cy="85" r="70" fill="none" stroke="#00875A" stroke-width="35" stroke-dasharray="47 392" stroke-dashoffset="-331" transform="rotate(-90 85 85)"/>
+    <circle cx="85" cy="85" r="70" fill="none" stroke="#00A86B" stroke-width="35" stroke-dasharray="31 408" stroke-dashoffset="-378" transform="rotate(-90 85 85)"/>
+    <circle cx="85" cy="85" r="70" fill="none" stroke="#8B9DC3" stroke-width="35" stroke-dasharray="12 427" stroke-dashoffset="-409" transform="rotate(-90 85 85)"/>
+    
+    <!-- Center Text -->
+    <circle cx="85" cy="85" r="45" fill="#F5F7FA"/>
+    <text x="85" y="80" font-family="system-ui, Noto Sans SC, sans-serif" font-size="20" font-weight="bold" fill="#003371" text-anchor="middle">12.5</text>
+    <text x="85" y="100" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#666" text-anchor="middle">亿台</text>
+    
+    <!-- Legend -->
+    <g transform="translate(-20, 180)">
+      <rect x="0" y="0" width="12" height="12" rx="2" fill="#003371"/>
+      <text x="20" y="10" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#333">亚太 45%</text>
+      
+      <rect x="80" y="0" width="12" height="12" rx="2" fill="#005691"/>
+      <text x="100" y="10" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#333">欧洲 22%</text>
+      
+      <rect x="160" y="0" width="12" height="12" rx="2" fill="#4A90A4"/>
+      <text x="180" y="10" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#333">北美 18%</text>
+      
+      <rect x="0" y="25" width="12" height="12" rx="2" fill="#00875A"/>
+      <text x="20" y="35" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#333">拉美 12%</text>
+      
+      <rect x="80" y="25" width="12" height="12" rx="2" fill="#00A86B"/>
+      <text x="100" y="35" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#333">中东非 8%</text>
+      
+      <rect x="160" y="25" width="12" height="12" rx="2" fill="#8B9DC3"/>
+      <text x="180" y="35" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#333">其他 3%</text>
+    </g>
+  </g>
+  
+  <!-- Right Section: Key Insights Cards -->
+  <g transform="translate(870, 200)">
+    <text x="0" y="0" font-family="system-ui, Noto Sans SC, sans-serif" font-size="18" font-weight="bold" fill="#003371">关键洞察</text>
+    
+    <!-- Card 1 -->
+    <g transform="translate(0, 30)">
+      <rect width="340" height="100" rx="8" fill="#FFFFFF" stroke="#E8ECF0" stroke-width="1"/>
+      <rect x="0" y="0" width="6" height="100" rx="3" fill="#00875A"/>
+      <text x="20" y="30" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" font-weight="bold" fill="#003371">新兴市场爆发</text>
+      <text x="20" y="55" font-family="system-ui, Noto Sans SC, sans-serif" font-size="12" fill="#666">拉美+中东非贡献全球增量的</text>
+      <text x="20" y="80" font-family="system-ui, Noto Sans SC, sans-serif" font-size="22" font-weight="bold" fill="#00875A">20.8%</text>
+    </g>
+    
+    <!-- Card 2 -->
+    <g transform="translate(0, 145)">
+      <rect width="340" height="100" rx="8" fill="#FFFFFF" stroke="#E8ECF0" stroke-width="1"/>
+      <rect x="0" y="0" width="6" height="100" rx="3" fill="#003371"/>
+      <text x="20" y="30" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" font-weight="bold" fill="#003371">亚太持续领跑</text>
+      <text x="20" y="55" font-family="system-ui, Noto Sans SC, sans-serif" font-size="12" fill="#666">中国品牌东南亚份额突破</text>
+      <text x="20" y="80" font-family="system-ui, Noto Sans SC, sans-serif" font-size="22" font-weight="bold" fill="#003371">52%</text>
+    </g>
+    
+    <!-- Card 3 -->
+    <g transform="translate(0, 260)">
+      <rect width="340" height="100" rx="8" fill="#FFFFFF" stroke="#E8ECF0" stroke-width="1"/>
+      <rect x="0" y="0" width="6" height="100" rx="3" fill="#005691"/>
+      <text x="20" y="30" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" font-weight="bold" fill="#003371">成熟市场承压</text>
+      <text x="20" y="55" font-family="system-ui, Noto Sans SC, sans-serif" font-size="12" fill="#666">北美换机周期延长至</text>
+      <text x="20" y="80" font-family="system-ui, Noto Sans SC, sans-serif" font-size="22" font-weight="bold" fill="#005691">4.2年</text>
+    </g>
+  </g>
+  
+  <!-- Footer -->
+  <rect x="0" y="680" width="1280" height="40" fill="#003371" opacity="0.1"/>
+  <text x="50" y="705" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#666">数据来源：IDC / Canalys / Counterpoint 2026Q1-Q4 | 注：区域划分遵循IDC标准分类</text>
+  
+  <!-- Decorative Elements -->
+  <circle cx="1200" cy="150" r="80" fill="none" stroke="#003371" stroke-width="1" opacity="0.1"/>
+  <circle cx="1200" cy="150" r="60" fill="none" stroke="#003371" stroke-width="1" opacity="0.05"/>
+  <circle cx="1200" cy="150" r="40" fill="none" stroke="#003371" stroke-width="1" opacity="0.03"/>
+</svg>

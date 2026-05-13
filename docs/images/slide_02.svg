@@ -1,0 +1,224 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" font-family="system-ui, Noto Sans SC, sans-serif">
+  <defs>
+    <!-- 渐变背景 -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F5F7FA"/>
+      <stop offset="100%" style="stop-color:#E8ECF0"/>
+    </linearGradient>
+    
+    <!-- 卡片阴影 -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#003371" flood-opacity="0.1"/>
+    </filter>
+    
+    <!-- 条形图渐变 -->
+    <linearGradient id="barGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#005691"/>
+      <stop offset="100%" style="stop-color:#0077B6"/>
+    </linearGradient>
+    
+    <linearGradient id="barGradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6B7280"/>
+      <stop offset="100%" style="stop-color:#9CA3AF"/>
+    </linearGradient>
+    
+    <linearGradient id="barGradient3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F97316"/>
+      <stop offset="100%" style="stop-color:#FB923C"/>
+    </linearGradient>
+    
+    <linearGradient id="barGradient4" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00875A"/>
+      <stop offset="100%" style="stop-color:#10B981"/>
+    </linearGradient>
+    
+    <linearGradient id="barGradient5" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7C3AED"/>
+      <stop offset="100%" style="stop-color:#A78BFA"/>
+    </linearGradient>
+    
+    <linearGradient id="barGradient6" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1D4ED8"/>
+      <stop offset="100%" style="stop-color:#3B82F6"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="1280" height="720" fill="url(#bgGradient)"/>
+  
+  <!-- 顶部装饰线 -->
+  <rect x="0" y="0" width="1280" height="4" fill="#003371"/>
+  
+  <!-- 标题区域 -->
+  <text x="60" y="55" font-size="32" font-weight="700" fill="#003371">2026年全球智能手机品牌销量TOP10</text>
+  <text x="60" y="85" font-size="14" fill="#64748B">排名基于2026年全年品牌出货量预估值（单位：百万台）</text>
+  
+  <!-- 左侧条形图区域 -->
+  <g id="barChart" transform="translate(60, 110)">
+    <!-- 图表标题 -->
+    <text x="0" y="0" font-size="16" font-weight="600" fill="#003371">品牌销量排行</text>
+    
+    <!-- Y轴标签和条形 -->
+    <!-- Samsung - 235M -->
+    <g transform="translate(0, 25)">
+      <text x="0" y="20" font-size="13" fill="#374151" text-anchor="end">1. Samsung</text>
+      <rect x="65" y="5" width="470" height="24" rx="4" fill="url(#barGradient1)"/>
+      <text x="545" y="22" font-size="13" font-weight="600" fill="#003371">235M</text>
+      <text x="590" y="22" font-size="12" fill="#00875A">▲ 4.2%</text>
+    </g>
+    
+    <!-- Apple - 220M -->
+    <g transform="translate(0, 65)">
+      <text x="0" y="20" font-size="13" fill="#374151" text-anchor="end">2. Apple</text>
+      <rect x="65" y="5" width="440" height="24" rx="4" fill="url(#barGradient2)"/>
+      <text x="515" y="22" font-size="13" font-weight="600" fill="#003371">220M</text>
+      <text x="560" y="22" font-size="12" fill="#00875A">▲ 6.8%</text>
+    </g>
+    
+    <!-- Xiaomi - 165M -->
+    <g transform="translate(0, 105)">
+      <text x="0" y="20" font-size="13" fill="#374151" text-anchor="end">3. Xiaomi</text>
+      <rect x="65" y="5" width="330" height="24" rx="4" fill="url(#barGradient3)"/>
+      <text x="405" y="22" font-size="13" font-weight="600" fill="#003371">165M</text>
+      <text x="450" y="22" font-size="12" fill="#00875A">▲ 12.5%</text>
+    </g>
+    
+    <!-- OPPO - 105M -->
+    <g transform="translate(0, 145)">
+      <text x="0" y="20" font-size="13" fill="#374151" text-anchor="end">4. OPPO</text>
+      <rect x="65" y="5" width="210" height="24" rx="4" fill="url(#barGradient4)"/>
+      <text x="285" y="22" font-size="13" font-weight="600" fill="#003371">105M</text>
+      <text x="330" y="22" font-size="12" fill="#DC2626">▼ 2.1%</text>
+    </g>
+    
+    <!-- Transsion - 95M -->
+    <g transform="translate(0, 185)">
+      <text x="0" y="20" font-size="13" fill="#374151" text-anchor="end">5. Transsion</text>
+      <rect x="65" y="5" width="190" height="24" rx="4" fill="url(#barGradient6)"/>
+      <text x="265" y="22" font-size="13" font-weight="600" fill="#003371">95M</text>
+      <text x="310" y="22" font-size="12" fill="#00875A">▲ 18.3%</text>
+    </g>
+    
+    <!-- vivo - 85M -->
+    <g transform="translate(0, 225)">
+      <text x="0" y="20" font-size="13" fill="#374151" text-anchor="end">6. vivo</text>
+      <rect x="65" y="5" width="170" height="24" rx="4" fill="url(#barGradient5)"/>
+      <text x="245" y="22" font-size="13" font-weight="600" fill="#003371">85M</text>
+      <text x="290" y="22" font-size="12" fill="#00875A">▲ 5.4%</text>
+    </g>
+    
+    <!-- Honor - 75M -->
+    <g transform="translate(0, 265)">
+      <text x="0" y="20" font-size="13" fill="#374151" text-anchor="end">7. Honor</text>
+      <rect x="65" y="5" width="150" height="24" rx="4" fill="#94A3B8"/>
+      <text x="225" y="22" font-size="13" font-weight="600" fill="#003371">75M</text>
+      <text x="270" y="22" font-size="12" fill="#00875A">▲ 22.1%</text>
+    </g>
+    
+    <!-- Huawei - 65M -->
+    <g transform="translate(0, 305)">
+      <text x="0" y="20" font-size="13" fill="#374151" text-anchor="end">8. Huawei</text>
+      <rect x="65" y="5" width="130" height="24" rx="4" fill="#94A3B8"/>
+      <text x="205" y="22" font-size="13" font-weight="600" fill="#003371">65M</text>
+      <text x="250" y="22" font-size="12" fill="#00875A">▲ 35.2%</text>
+    </g>
+    
+    <!-- realme - 55M -->
+    <g transform="translate(0, 345)">
+      <text x="0" y="20" font-size="13" fill="#374151" text-anchor="end">9. realme</text>
+      <rect x="65" y="5" width="110" height="24" rx="4" fill="#94A3B8"/>
+      <text x="185" y="22" font-size="13" font-weight="600" fill="#003371">55M</text>
+      <text x="230" y="22" font-size="12" fill="#DC2626">▼ 8.5%</text>
+    </g>
+    
+    <!-- Motorola - 45M -->
+    <g transform="translate(0, 385)">
+      <text x="0" y="20" font-size="13" fill="#374151" text-anchor="end">10. Motorola</text>
+      <rect x="65" y="5" width="90" height="24" rx="4" fill="#94A3B8"/>
+      <text x="165" y="22" font-size="13" font-weight="600" fill="#003371">45M</text>
+      <text x="210" y="22" font-size="12" fill="#00875A">▲ 3.2%</text>
+    </g>
+  </g>
+  
+  <!-- 右侧数据卡片区域 -->
+  <g id="dataCards" transform="translate(780, 110)">
+    <!-- 卡片1：全球总出货量 -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="440" height="140" rx="12" fill="white" filter="url(#cardShadow)"/>
+      <rect x="0" y="0" width="440" height="6" rx="3" fill="#003371"/>
+      
+      <!-- 图标 -->
+      <circle cx="45" cy="70" r="28" fill="#E0F2FE"/>
+      <text x="45" y="76" font-size="20" text-anchor="middle">📱</text>
+      
+      <text x="90" y="45" font-size="14" fill="#64748B">全球总出货量</text>
+      <text x="90" y="85" font-size="36" font-weight="700" fill="#003371">12.5</text>
+      <text x="210" y="85" font-size="20" fill="#003371">亿台</text>
+      
+      <!-- 同比标签 -->
+      <rect x="90" y="100" width="70" height="24" rx="12" fill="#DCFCE7"/>
+      <text x="125" y="117" font-size="12" font-weight="600" fill="#00875A" text-anchor="middle">▲ 3.2%</text>
+    </g>
+    
+    <!-- 卡片2：Top5集中度 -->
+    <g transform="translate(0, 160)">
+      <rect x="0" y="0" width="440" height="140" rx="12" fill="white" filter="url(#cardShadow)"/>
+      <rect x="0" y="0" width="440" height="6" rx="3" fill="#005691"/>
+      
+      <!-- 图标 -->
+      <circle cx="45" cy="70" r="28" fill="#E0F2FE"/>
+      <text x="45" y="76" font-size="20" text-anchor="middle">📊</text>
+      
+      <text x="90" y="45" font-size="14" fill="#64748B">Top5 市场集中度</text>
+      <text x="90" y="85" font-size="36" font-weight="700" fill="#005691">78%</text>
+      
+      <!-- 进度条 -->
+      <rect x="90" y="105" width="300" height="8" rx="4" fill="#E2E8F0"/>
+      <rect x="90" y="105" width="234" height="8" rx="4" fill="#005691"/>
+      <text x="400" y="114" font-size="12" fill="#64748B">78%</text>
+    </g>
+    
+    <!-- 卡片3：中国品牌份额 -->
+    <g transform="translate(0, 320)">
+      <rect x="0" y="0" width="440" height="140" rx="12" fill="white" filter="url(#cardShadow)"/>
+      <rect x="0" y="0" width="440" height="6" rx="3" fill="#00875A"/>
+      
+      <!-- 图标 -->
+      <circle cx="45" cy="70" r="28" fill="#E0F2FE"/>
+      <text x="45" y="76" font-size="20" text-anchor="middle">🇨🇳</text>
+      
+      <text x="90" y="45" font-size="14" fill="#64748B">中国品牌全球份额</text>
+      <text x="90" y="85" font-size="36" font-weight="700" fill="#00875A">42%</text>
+      
+      <!-- 品牌列表 -->
+      <g transform="translate(90, 100)">
+        <circle cx="0" cy="7" r="4" fill="#F97316"/>
+        <text x="10" y="11" font-size="11" fill="#374151">小米</text>
+        <circle cx="55" cy="7" r="4" fill="#00875A"/>
+        <text x="65" y="11" font-size="11" fill="#374151">OPPO</text>
+        <circle cx="105" cy="7" r="4" fill="#7C3AED"/>
+        <text x="115" y="11" font-size="11" fill="#374151">vivo</text>
+        <circle cx="155" cy="7" r="4" fill="#94A3B8"/>
+        <text x="165" y="11" font-size="11" fill="#374151">传音</text>
+      </g>
+    </g>
+  </g>
+  
+  <!-- 底部备注 -->
+  <g transform="translate(60, 680)">
+    <rect x="0" y="-15" width="1160" height="1" fill="#CBD5E1"/>
+    <text x="0" y="0" font-size="11" fill="#94A3B8">注：数据为2026年全年预估值，含5G及4G机型。排名依据为各品牌全球出货量总和。</text>
+    <text x="1000" y="0" font-size="11" fill="#94A3B8" text-anchor="end">数据来源：IDC / Canalys / Counterpoint 2026Q1-Q4</text>
+  </g>
+  
+  <!-- 装饰元素：右上角芯片电路纹理 -->
+  <g opacity="0.1" transform="translate(1100, 20)">
+    <rect x="0" y="0" width="60" height="60" fill="none" stroke="#003371" stroke-width="2"/>
+    <rect x="10" y="10" width="40" height="40" fill="none" stroke="#003371" stroke-width="1"/>
+    <line x1="30" y1="0" x2="30" y2="10" stroke="#003371" stroke-width="2"/>
+    <line x1="30" y1="50" x2="30" y2="60" stroke="#003371" stroke-width="2"/>
+    <line x1="0" y1="30" x2="10" y2="30" stroke="#003371" stroke-width="2"/>
+    <line x1="50" y1="30" x2="60" y2="30" stroke="#003371" stroke-width="2"/>
+    <circle cx="30" cy="30" r="8" fill="none" stroke="#003371" stroke-width="1"/>
+  </g>
+</svg>

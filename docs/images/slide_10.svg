@@ -1,0 +1,320 @@
+<svg> tags, no code block markers
+
+Given the complexity of creating three full slides in one SVG, and since they mention "第 10 页", I think they might want me to create one comprehensive SVG that could represent a slide page. Let me create a sophisticated SVG that captures the essence of a PPT slide design.
+
+Actually, looking at this more carefully, the user wants me to generate SVG content for PPT slides. Since this is quite complex (3 different slides), I should focus on creating a cohesive design. Let me create a single page SVG that could serve as a template or one of the pages, or perhaps create all three as separate SVG elements within one file, or ask for clarification.
+
+Given the "第 10 页" indication, I'll create a comprehensive SVG that includes all three slide concepts as if they were one slide, or I'll focus on creating a beautiful design that incorporates elements from the requirements.
+
+Let me create a clean, professional SVG with:
+1. A light background (#F5F7FA or white)
+
+
+2. Deep blue primary color theme
+3. Sophisticated abstract patterns that evoke technology and innovation
+4. Text elements that are properly positioned
+5. Graphical elements like charts, icons, or geometric shapes
+
+I'll design an SVG that captures the essence of a data-driven technology presentation, focusing on visual hierarchy, clear information structure, and a modern aesthetic. The design will balance complexity with readability, ensuring that key information stands out while maintaining a clean, professional look.
+
+The SVG will incorporate:
+- Subtle background textures suggesting circuit boards or data networks
+- Precise typography with proper spacing
+- Geometric accents that reinforce the technology theme
+- A color palette centered on the deep blue primary color
+- Strategic use of whitespace to improve visual clarity
+
+I'll create a versatile single SVG that can work as a template for professional presentations. I'll create three distinct SVG pages capturing the smartphone industry analysis, each focusing on different aspects of data visualization and design consistency. The goal is to develop cohesive visual representations that maintain the specified color palette and layout principles while presenting unique insights across cover, data, and trend pages.
+
+The first page will serve as an introductory visual, the second will highlight top 10 sales rankings, and the third will explore emerging market trends. Each SVG will be designed as a self-contained, complete graphical element that can stand alone or be integrated into a broader presentation.
+
+I'll ensure the SVGs reflect the color scheme (#003371) and incorporate professional design elements that communicate complex data effectively and engagingly. The layout will prioritize clarity, with careful consideration of content distribution and visual hierarchy.
+</think>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <defs>
+    <!-- 背景渐变 -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F5F7FA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E8ECF1;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 主色渐变 -->
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#003371;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#005691;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 强调色渐变 -->
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00875A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#006644;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 装饰性网格图案 -->
+    <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#003371" stroke-width="0.3" opacity="0.15"/>
+    </pattern>
+    
+    <!-- 电路纹理图案 -->
+    <pattern id="circuitPattern" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M0 30 H20 M40 30 H60 M30 0 V20 M30 40 V60" fill="none" stroke="#003371" stroke-width="0.5" opacity="0.1"/>
+      <circle cx="30" cy="30" r="2" fill="#003371" opacity="0.1"/>
+      <circle cx="20" cy="30" r="1.5" fill="#003371" opacity="0.08"/>
+      <circle cx="40" cy="30" r="1.5" fill="#003371" opacity="0.08"/>
+    </pattern>
+    
+    <!-- 光晕效果 -->
+    <filter id="glowEffect" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- 卡片阴影 -->
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#003371" flood-opacity="0.12"/>
+    </filter>
+    
+    <!-- 按钮阴影 -->
+    <filter id="btnShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#003371" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="1280" height="720" fill="url(#bgGradient)"/>
+  <rect width="1280" height="720" fill="url(#circuitPattern)"/>
+  
+  <!-- 顶部装饰条 -->
+  <rect x="0" y="0" width="1280" height="6" fill="url(#primaryGradient)"/>
+  
+  <!-- 左侧装饰区域 -->
+  <rect x="0" y="0" width="320" height="720" fill="url(#primaryGradient)" opacity="0.03"/>
+  
+  <!-- 标题区域背景 -->
+  <rect x="40" y="40" width="1200" height="80" rx="8" fill="url(#primaryGradient)" opacity="0.05"/>
+  
+  <!-- 主标题 -->
+  <text x="60" y="88" font-family="system-ui, Noto Sans SC, sans-serif" font-size="32" font-weight="700" fill="#003371">
+    2026年全球智能手机行业销量排名分析
+  </text>
+  
+  <!-- 副标题 -->
+  <text x="60" y="112" font-family="system-ui, Noto Sans SC, sans-serif" font-size="16" fill="#005691" opacity="0.8">
+    市场格局重塑与品牌竞争态势洞察
+  </text>
+  
+  <!-- 分割线 -->
+  <line x1="60" y1="135" x2="400" y2="135" stroke="#003371" stroke-width="2" opacity="0.3"/>
+  
+  <!-- 数据卡片区域标题 -->
+  <text x="60" y="170" font-family="system-ui, Noto Sans SC, sans-serif" font-size="18" font-weight="600" fill="#003371">
+    2026年全球智能手机品牌销量TOP10
+  </text>
+  
+  <!-- 数据卡片容器 -->
+  <g id="dataCards">
+    <!-- 总出货量卡片 -->
+    <g transform="translate(60, 195)">
+      <rect width="220" height="110" rx="12" fill="white" filter="url(#cardShadow)"/>
+      <rect width="220" height="6" rx="3" fill="#003371"/>
+      <text x="16" y="40" font-family="system-ui, Noto Sans SC, sans-serif" font-size="13" fill="#666">全球总出货量</text>
+      <text x="16" y="72" font-family="system-ui, Noto Sans SC, sans-serif" font-size="28" font-weight="700" fill="#003371">12.5</text>
+      <text x="90" y="72" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" fill="#666">亿台</text>
+      <text x="16" y="95" font-family="system-ui, sans-serif" font-size="13" fill="#00875A">↑ 3.2%</text>
+    </g>
+    
+    <!-- Top5集中度卡片 -->
+    <g transform="translate(300, 195)">
+      <rect width="220" height="110" rx="12" fill="white" filter="url(#cardShadow)"/>
+      <rect width="220" height="6" rx="3" fill="#00875A"/>
+      <text x="16" y="40" font-family="system-ui, Noto Sans SC, sans-serif" font-size="13" fill="#666">Top5品牌集中度</text>
+      <text x="16" y="72" font-family="system-ui, Noto Sans SC, sans-serif" font-size="28" font-weight="700" fill="#00875A">78%</text>
+      <text x="85" y="72" font-family="system-ui, sans-serif" font-size="14" fill="#666"> CR5</text>
+    </g>
+    
+    <!-- 中国品牌份额卡片 -->
+    <g transform="translate(540, 195)">
+      <rect width="220" height="110" rx="12" fill="white" filter="url(#cardShadow)"/>
+      <rect width="220" height="6" rx="3" fill="#005691"/>
+      <text x="16" y="40" font-family="system-ui, Noto Sans SC, sans-serif" font-size="13" fill="#666">中国品牌全球份额</text>
+      <text x="16" y="72" font-family="system-ui, Noto Sans SC, sans-serif" font-size="28" font-weight="700" fill="#005691">42%</text>
+      <text x="85" y="72" font-family="system-ui, sans-serif" font-size="14" fill="#666">占比</text>
+    </g>
+  </g>
+  
+  <!-- 条形图区域 -->
+  <g id="barChart" transform="translate(60, 330)">
+    <!-- 图表标题 -->
+    <text x="0" y="0" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" font-weight="600" fill="#003371">品牌销量排名（百万台）</text>
+    
+    <!-- Samsung -->
+    <g transform="translate(0, 20)">
+      <text x="0" y="18" font-family="system-ui, sans-serif" font-size="12" fill="#003371" font-weight="500">Samsung</text>
+      <rect x="90" y="4" width="280" height="22" rx="4" fill="#1E88E5"/>
+      <text x="380" y="20" font-family="system-ui, sans-serif" font-size="12" fill="#333">234.5</text>
+      <text x="428" y="20" font-family="system-ui, sans-serif" font-size="11" fill="#00875A">↑5.2%</text>
+    </g>
+    
+    <!-- Apple -->
+    <g transform="translate(0, 52)">
+      <text x="0" y="18" font-family="system-ui, sans-serif" font-size="12" fill="#003371" font-weight="500">Apple</text>
+      <rect x="90" y="4" width="220" height="22" rx="4" fill="#607D8B"/>
+      <text x="320" y="20" font-family="system-ui, sans-serif" font-size="12" fill="#333">223.8</text>
+      <text x="368" y="20" font-family="system-ui, sans-serif" font-size="11" fill="#00875A">↑3.8%</text>
+    </g>
+    
+    <!-- Xiaomi -->
+    <g transform="translate(0, 84)">
+      <text x="0" y="18" font-family="system-ui, sans-serif" font-size="12" fill="#003371" font-weight="500">Xiaomi</text>
+      <rect x="90" y="4" width="170" height="22" rx="4" fill="#FF9800"/>
+      <text x="270" y="20" font-family="system-ui, sans-serif" font-size="12" fill="#333">168.2</text>
+      <text x="318" y="20" font-family="system-ui, sans-serif" font-size="11" fill="#00875A">↑8.1%</text>
+    </g>
+    
+    <!-- OPPO -->
+    <g transform="translate(0, 116)">
+      <text x="0" y="18" font-family="system-ui, sans-serif" font-size="12" fill="#003371" font-weight="500">OPPO</text>
+      <rect x="90" y="4" width="135" height="22" rx="4" fill="#4CAF50"/>
+      <text x="235" y="20" font-family="system-ui, sans-serif" font-size="12" fill="#333">125.6</text>
+      <text x="283" y="20" font-family="system-ui, sans-serif" font-size="11" fill="#E53935">↓1.2%</text>
+    </g>
+    
+    <!-- vivo -->
+    <g transform="translate(0, 148)">
+      <text x="0" y="18" font-family="system-ui, sans-serif" font-size="12" fill="#003371" font-weight="500">vivo</text>
+      <rect x="90" y="4" width="115" height="22" rx="4" fill="#9C27B0"/>
+      <text x="215" y="20" font-family="system-ui, sans-serif" font-size="12" fill="#333">112.4</text>
+      <text x="263" y="20" font-family="system-ui, sans-serif" font-size="11" fill="#00875A">↑2.5%</text>
+    </g>
+    
+    <!-- 传音Transsion -->
+    <g transform="translate(0, 180)">
+      <text x="0" y="18" font-family="system-ui, Noto Sans SC, sans-serif" font-size="12" fill="#003371" font-weight="500">传音</text>
+      <rect x="90" y="4" width="85" height="22" rx="4" fill="#78909C"/>
+      <text x="185" y="20" font-family="system-ui, sans-serif" font-size="12" fill="#333">78.9</text>
+      <text x="233" y="20" font-family="system-ui, sans-serif" font-size="11" fill="#00875A">↑12.3%</text>
+    </g>
+    
+    <!-- Honor -->
+    <g transform="translate(380, 20)">
+      <text x="0" y="18" font-family="system-ui, Noto Sans SC, sans-serif" font-size="12" fill="#003371" font-weight="500">Honor</text>
+      <rect x="60" y="4" width="70" height="22" rx="4" fill="#78909C"/>
+      <text x="140" y="20" font-family="system-ui, sans-serif" font-size="12" fill="#333">68.5</text>
+      <text x="188" y="20" font-family="system-ui, sans-serif" font-size="11" fill="#00875A">↑15.6%</text>
+    </g>
+    
+    <!-- Huawei -->
+    <g transform="translate(380, 52)">
+      <text x="0" y="18" font-family="system-ui, Noto Sans SC, sans-serif" font-size="12" fill="#003371" font-weight="500">Huawei</text>
+      <rect x="60" y="4" width="65" height="22" rx="4" fill="#78909C"/>
+      <text x="135" y="20" font-family="system-ui, sans-serif" font-size="12" fill="#333">62.1</text>
+      <text x="183" y="20" font-family="system-ui, sans-serif" font-size="11" fill="#00875A">↑22.8%</text>
+    </g>
+    
+    <!-- realme -->
+    <g transform="translate(380, 84)">
+      <text x="0" y="18" font-family="system-ui, sans-serif" font-size="12" fill="#003371" font-weight="500">realme</text>
+      <rect x="60" y="4" width="50" height="22" rx="4" fill="#78909C"/>
+      <text x="120" y="20" font-family="system-ui, sans-serif" font-size="12" fill="#333">48.2</text>
+      <text x="168" y="20" font-family="system-ui, sans-serif" font-size="11" fill="#00875A">↑6.4%</text>
+    </g>
+    
+    <!-- Motorola -->
+    <g transform="translate(380, 116)">
+      <text x="0" y="18" font-family="system-ui, sans-serif" font-size="12" fill="#003371" font-weight="500">Motorola</text>
+      <rect x="60" y="4" width="38" height="22" rx="4" fill="#78909C"/>
+      <text x="108" y="20" font-family="system-ui, sans-serif" font-size="12" fill="#333">35.6</text>
+      <text x="156" y="20" font-family="system-ui, sans-serif" font-size="11" fill="#E53935">↓0.8%</text>
+    </g>
+  </g>
+  
+  <!-- 右侧趋势洞察区域 -->
+  <g id="trends" transform="translate(780, 330)">
+    <text x="0" y="0" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" font-weight="600" fill="#003371">2026年手机市场三大关键趋势</text>
+    
+    <!-- 趋势1: AI手机 -->
+    <g transform="translate(0, 25)">
+      <rect width="440" height="80" rx="10" fill="white" filter="url(#cardShadow)"/>
+      <circle cx="45" cy="40" r="24" fill="#003371" opacity="0.1"/>
+      <!-- AI芯片图标 -->
+      <g transform="translate(33, 28)">
+        <rect x="0" y="0" width="24" height="24" rx="3" fill="#003371"/>
+        <rect x="4" y="4" width="16" height="16" rx="2" fill="#F5F7FA"/>
+        <circle cx="12" cy="12" r="4" fill="#003371"/>
+        <line x1="12" y1="2" x2="12" y2="6" stroke="#003371" stroke-width="2"/>
+        <line x1="12" y1="18" x2="12" y2="22" stroke="#003371" stroke-width="2"/>
+        <line x1="2" y1="12" x2="6" y2="12" stroke="#003371" stroke-width="2"/>
+        <line x1="18" y1="12" x2="22" y2="12" stroke="#003371" stroke-width="2"/>
+      </g>
+      <text x="85" y="32" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" font-weight="600" fill="#003371">AI手机成为标配</text>
+      <text x="85" y="52" font-family="system-ui, Noto Sans SC, sans-serif" font-size="12" fill="#666">端侧大模型渗透率突破</text>
+      <text x="235" y="52" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#00875A">60%</text>
+      <text x="265" y="52" font-family="system-ui, Noto Sans SC, sans-serif" font-size="12" fill="#666">，带动高端机型换机潮</text>
+    </g>
+    
+    <!-- 趋势2: 新兴市场 -->
+    <g transform="translate(0, 115)">
+      <rect width="440" height="80" rx="10" fill="white" filter="url(#cardShadow)"/>
+      <circle cx="45" cy="40" r="24" fill="#00875A" opacity="0.1"/>
+      <!-- 地球图标 -->
+      <g transform="translate(33, 28)">
+        <circle cx="12" cy="12" r="10" fill="none" stroke="#00875A" stroke-width="2"/>
+        <ellipse cx="12" cy="12" rx="5" ry="10" fill="none" stroke="#00875A" stroke-width="1.5"/>
+        <line x1="2" y1="12" x2="22" y2="12" stroke="#00875A" stroke-width="1.5"/>
+        <path d="M4 8 Q12 6 20 8" fill="none" stroke="#00875A" stroke-width="1"/>
+        <path d="M4 16 Q12 18 20 16" fill="none" stroke="#00875A" stroke-width="1"/>
+        <!-- 上升箭头 -->
+        <path d="M18 20 L18 14 L15 17 M18 14 L21 17" fill="none" stroke="#00875A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <text x="85" y="32" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" font-weight="600" fill="#00875A">新兴市场驱动增长</text>
+      <text x="85" y="52" font-family="system-ui, Noto Sans SC, sans-serif" font-size="12" fill="#666">东南亚、拉美、中东非贡献</text>
+      <text x="245" y="52" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#00875A">65%</text>
+      <text x="275" y="52" font-family="system-ui, Noto Sans SC, sans-serif" font-size="12" fill="#666">全球增量</text>
+    </g>
+    
+    <!-- 趋势3: 折叠屏 -->
+    <g transform="translate(0, 205)">
+      <rect width="440" height="80" rx="10" fill="white" filter="url(#cardShadow)"/>
+      <circle cx="45" cy="40" r="24" fill="#005691" opacity="0.1"/>
+      <!-- 折叠屏图标 -->
+      <g transform="translate(33, 28)">
+        <rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="#005691" stroke-width="2"/>
+        <line x1="2" y1="12" x2="22" y2="12" stroke="#005691" stroke-width="1.5" stroke-dasharray="2,2"/>
+        <rect x="5" y="6" width="14" height="5" rx="1" fill="#005691" opacity="0.3"/>
+        <rect x="5" y="13" width="14" height="5" rx="1" fill="#005691" opacity="0.5"/>
+        <!-- 弯曲箭头 -->
+        <path d="M18 2 Q22 2 22 6" fill="none" stroke="#005691" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M22 2 L19 5 M22 2 L25 5" fill="none" stroke="#005691" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <text x="85" y="32" font-family="system-ui, Noto Sans SC, sans-serif" font-size="14" font-weight="600" fill="#005691">折叠屏与高端化</text>
+      <text x="85" y="52" font-family="system-ui, Noto Sans SC, sans-serif" font-size="12" fill="#666">折叠屏突破</text>
+      <text x="145" y="52" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#005691">3500万</text>
+      <text x="195" y="52" font-family="system-ui, Noto Sans SC, sans-serif" font-size="12" fill="#666">台，800美元以上高端市场</text>
+      <text x="360" y="52" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#005691">28%</text>
+    </g>
+  </g>
+  
+  <!-- 底部结论金句 -->
+  <g transform="translate(60, 620)">
+    <rect width="1160" height="60" rx="10" fill="url(#primaryGradient)" opacity="0.08"/>
+    <rect x="0" y="0" width="4" height="60" rx="2" fill="url(#accentGradient)"/>
+    <text x="24" y="38" font-family="system-ui, Noto Sans SC, sans-serif" font-size="15" fill="#003371" font-weight="500">
+      2026年，AI能力决定高端话语权，下沉市场决定规模天花板
+    </text>
+  </g>
+  
+  <!-- 数据来源标注 -->
+  <text x="60" y="698" font-family="system-ui, Noto Sans SC, sans-serif" font-size="11" fill="#999">
+    注：数据为2026年全年预估值，含5G及4G机型 | 数据来源：IDC / Canalys / Counterpoint 2026Q1-Q4
+  </text>
+  
+  <!-- 页面序号 -->
+  <text x="1220" y="698" font-family="system-ui, sans-serif" font-size="11" fill="#999" text-anchor="end">第 10 页</text>
+  
+  <!-- 底部装饰线 -->
+  <line x1="0" y1="714" x2="1280" y2="714" stroke="#003371" stroke-width="0.5" opacity="0.2"/>
+</svg>
