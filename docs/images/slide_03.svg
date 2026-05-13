@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" font-family="system-ui, Noto Sans SC, sans-serif">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#003371;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#005691;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="layerGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00875A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#006644;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="layerGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#005691;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#003371;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#003371" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#F5F7FA"/>
+  
+  <!-- Header Bar -->
+  <rect x="0" y="0" width="1280" height="90" fill="url(#headerGrad)"/>
+  
+  <!-- Page Number Badge -->
+  <rect x="1150" y="25" width="80" height="40" rx="6" fill="rgba(255,255,255,0.2)"/>
+  <text x="1190" y="52" fill="#FFFFFF" font-size="18" font-weight="600" text-anchor="middle">03</text>
+  
+  <!-- Title -->
+  <text x="60" y="55" fill="#FFFFFF" font-size="32" font-weight="700">智慧城市技术总体架构</text>
+  
+  <!-- Decorative Line -->
+  <rect x="60" y="70" width="120" height="4" rx="2" fill="#00875A"/>
+  
+  <!-- Main Content Area -->
+  <g transform="translate(60, 120)">
+    
+    <!-- Architecture Layers Container -->
+    <g filter="url(#shadow)">
+      
+      <!-- Application Layer (Top) -->
+      <g>
+        <rect x="200" y="0" width="880" height="110" rx="12" fill="url(#layerGrad1)"/>
+        <text x="240" y="45" fill="#FFFFFF" font-size="22" font-weight="700">应用层</text>
+        <text x="240" y="75" fill="rgba(255,255,255,0.9)" font-size="16">政务、医疗、交通、教育全场景覆盖</text>
+        
+        <!-- Icons for Application Layer -->
+        <g transform="translate(700, 25)">
+          <circle cx="30" cy="30" r="22" fill="rgba(255,255,255,0.2)"/>
+          <text x="30" y="36" fill="#FFFFFF" font-size="20" text-anchor="middle">✦</text>
+        </g>
+        <g transform="translate(760, 25)">
+          <circle cx="30" cy="30" r="22" fill="rgba(255,255,255,0.2)"/>
+          <text x="30" y="36" fill="#FFFFFF" font-size="20" text-anchor="middle">✦</text>
+        </g>
+        <g transform="translate(820, 25)">
+          <circle cx="30" cy="30" r="22" fill="rgba(255,255,255,0.2)"/>
+          <text x="30" y="36" fill="#FFFFFF" font-size="20" text-anchor="middle">✦</text>
+        </g>
+      </g>
+      
+      <!-- Platform Layer -->
+      <g>
+        <rect x="200" y="130" width="880" height="110" rx="12" fill="url(#layerGrad2)"/>
+        <text x="240" y="175" fill="#FFFFFF" font-size="22" font-weight="700">平台层</text>
+        <text x="240" y="205" fill="rgba(255,255,255,0.9)" font-size="16">城市数字孪生与 AI 大脑</text>
+        
+        <!-- Digital Twin Icon -->
+        <g transform="translate(700, 145)">
+          <circle cx="30" cy="30" r="22" fill="rgba(255,255,255,0.2)"/>
+          <text x="30" y="36" fill="#FFFFFF" font-size="20" text-anchor="middle">⬡</text>
+        </g>
+        <g transform="translate(760, 145)">
+          <circle cx="30" cy="30" r="22" fill="rgba(255,255,255,0.2)"/>
+          <text x="30" y="36" fill="#FFFFFF" font-size="20" text-anchor="middle">⬡</text>
+        </g>
+      </g>
+      
+      <!-- Network Layer -->
+      <g>
+        <rect x="200" y="260" width="880" height="110" rx="12" fill="#003371"/>
+        <text x="240" y="305" fill="#FFFFFF" font-size="22" font-weight="700">网络层</text>
+        <text x="240" y="335" fill="rgba(255,255,255,0.9)" font-size="16">5G 与光纤骨干网融合承载</text>
+        
+        <!-- Network Icons -->
+        <g transform="translate(700, 275)">
+          <circle cx="30" cy="30" r="22" fill="rgba(255,255,255,0.2)"/>
+          <text x="30" y="36" fill="#FFFFFF" font-size="20" text-anchor="middle">◎</text>
+        </g>
+        <g transform="translate(760, 275)">
+          <circle cx="30" cy="30" r="22" fill="rgba(255,255,255,0.2)"/>
+          <text x="30" y="36" fill="#FFFFFF" font-size="20" text-anchor="middle">◎</text>
+        </g>
+      </g>
+      
+      <!-- Perception Layer (Bottom) -->
+      <g>
+        <rect x="200" y="390" width="880" height="110" rx="12" fill="#002855"/>
+        <text x="240" y="435" fill="#FFFFFF" font-size="22" font-weight="700">感知层</text>
+        <text x="240" y="465" fill="rgba(255,255,255,0.9)" font-size="16">全域物联网设备统一接入</text>
+        
+        <!-- IoT Icons -->
+        <g transform="translate(700, 405)">
+          <circle cx="30" cy="30" r="22" fill="rgba(255,255,255,0.2)"/>
+          <text x="30" y="36" fill="#FFFFFF" font-size="20" text-anchor="middle">◉</text>
+        </g>
+        <g transform="translate(760, 405)">
+          <circle cx="30" cy="30" r="22" fill="rgba(255,255,255,0.2)"/>
+          <text x="30" y="36" fill="#FFFFFF" font-size="20" text-anchor="middle">◉</text>
+        </g>
+        <g transform="translate(820, 405)">
+          <circle cx="30" cy="30" r="22" fill="rgba(255,255,255,0.2)"/>
+          <text x="30" y="36" fill="#FFFFFF" font-size="20" text-anchor="middle">◉</text>
+        </g>
+      </g>
+      
+    </g>
+    
+    <!-- Left Side Labels -->
+    <g>
+      <!-- Application Layer Label -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="30" width="160" height="50" rx="8" fill="#00875A"/>
+        <text x="80" y="62" fill="#FFFFFF" font-size="18" font-weight="600" text-anchor="middle">应用层</text>
+      </g>
+      
+      <!-- Platform Layer Label -->
+      <g transform="translate(0, 130)">
+        <rect x="0" y="30" width="160" height="50" rx="8" fill="#005691"/>
+        <text x="80" y="62" fill="#FFFFFF" font-size="18" font-weight="600" text-anchor="middle">平台层</text>
+      </g>
+      
+      <!-- Network Layer Label -->
+      <g transform="translate(0, 260)">
+        <rect x="0" y="30" width="160" height="50" rx="8" fill="#003371"/>
+        <text x="80" y="62" fill="#FFFFFF" font-size="18" font-weight="600" text-anchor="middle">网络层</text>
+      </g>
+      
+      <!-- Perception Layer Label -->
+      <g transform="translate(0, 390)">
+        <rect x="0" y="30" width="160" height="50" rx="8" fill="#002855"/>
+        <text x="80" y="62" fill="#FFFFFF" font-size="18" font-weight="600" text-anchor="middle">感知层</text>
+      </g>
+    </g>
+    
+    <!-- Connection Lines (Right Side) -->
+    <g stroke="#003371" stroke-width="2" fill="none" opacity="0.3">
+      <path d="M1120 55 L1180 55 L1180 445 L1120 445"/>
+      <path d="M1120 185 L1160 185 L1160 315 L1120 315"/>
+    </g>
+    
+    <!-- Arrow Indicators -->
+    <g fill="#00875A">
+      <polygon points="1110,50 1120,55 1110,60"/>
+      <polygon points="1110,180 1120,185 1110,190"/>
+      <polygon points="1110,310 1120,315 1110,320"/>
+      <polygon points="1110,440 1120,445 1110,450"/>
+    </g>
+    
+  </g>
+  
+  <!-- Bottom Decorative Element -->
+  <g transform="translate(60, 650)">
+    <rect x="0" y="0" width="1160" height="2" rx="1" fill="#003371" opacity="0.1"/>
+    <text x="0" y="30" fill="#003371" font-size="14" opacity="0.6">智慧城市数字化转型研究</text>
+    <text x="1160" y="30" fill="#003371" font-size="14" opacity="0.6" text-anchor="end">基于新一代信息技术的城市治理创新实践</text>
+  </g>
+  
+</svg>
