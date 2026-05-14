@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, RefreshCw, Download, Eye, Layout, CheckCircle, Edit3, Plus, Trash2, Palette, Loader, Save } from 'lucide-react'
+import { ArrowLeft, RefreshCw, Download, Eye, Layout, CheckCircle, Edit3, Plus, Trash2, Palette, Loader, Save, Settings } from 'lucide-react'
 import { useProjectStore } from '@/store/projectStore'
 import { api, type Page, type LayoutTemplate } from '@/api/client'
 import GenerationProgress from '@/components/workspace/GenerationProgress'
@@ -9,6 +9,7 @@ import ExportDialog from '@/components/workspace/ExportDialog'
 import PageEditorModal from '@/components/workspace/PageEditorModal'
 import OutlineEditorModal from '@/components/workspace/OutlineEditorModal'
 import StyleSettingsModal from '@/components/workspace/StyleSettingsModal'
+import SettingsModal from '@/components/settings/SettingsModal'
 
 type GenStatus = 'idle' | 'generating' | 'completed' | 'error'
 
@@ -31,6 +32,7 @@ export default function WorkspacePage() {
   const [showPageEditor, setShowPageEditor] = useState(false)
   const [showOutlineEditor, setShowOutlineEditor] = useState(false)
   const [showStyleSettings, setShowStyleSettings] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const [regeneratingPageId, setRegeneratingPageId] = useState<string | null>(null)
   const [loadingPageId, setLoadingPageId] = useState<string | null>(null)
   const [savingAll, setSavingAll] = useState(false)
@@ -262,6 +264,9 @@ export default function WorkspacePage() {
           <button className="btn-icon" onClick={() => setShowStyleSettings(true)} title="样式设置">
             <Palette size={15} /> 样式
           </button>
+          <button className="btn-icon" onClick={() => setShowSettings(true)} title="AI 设置">
+            <Settings size={15} /> 设置
+          </button>
           <button className="btn-icon" onClick={() => setShowTemplateModal(true)} title="更换模板">
             <Layout size={15} /> 模板
           </button>
@@ -478,6 +483,13 @@ export default function WorkspacePage() {
           onSaved={loadProject}
         />
       )}
+      {showSettings && (
+        <SettingsModal
+          open={showSettings}
+          onClose={() => setShowSettings(false)}
+          onSaved={() => {}}
+        />
+      )}
 
       <style>{`
         .workspace { display: flex; flex-direction: column; height: calc(100vh - 56px); }
@@ -539,6 +551,43 @@ export default function WorkspacePage() {
         .preview-empty-text { font-size: 15px; font-weight: 500; }
         .spinner { width: 32px; height: 32px; border: 3px solid var(--color-border); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
         .loading-center { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 80px; color: var(--color-text-muted); }
+
+        /* SettingsModal */
+        .settings-modal-box { width: 560px; max-height: 80vh; display: flex; flex-direction: column; }
+        .settings-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--color-border); padding: 0 4px; flex-shrink: 0; }
+        .settings-tab { display: flex; align-items: center; gap: 6px; padding: 10px 16px; border: none; background: none; cursor: pointer; font-size: 13px; color: var(--color-text-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; }
+        .settings-tab:hover { color: var(--color-text); }
+        .settings-tab.active { color: var(--color-primary); border-bottom-color: var(--color-primary); font-weight: 500; }
+        .settings-loading { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px; color: var(--color-text-muted); }
+        .settings-error { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; color: #DC2626; font-size: 13px; margin-bottom: 12px; }
+        .settings-section { display: flex; flex-direction: column; gap: 16px; }
+        .settings-field { display: flex; flex-direction: column; gap: 6px; }
+        .settings-field > label { font-size: 13px; font-weight: 500; color: var(--color-text); }
+        .field-hint { font-size: 11px; color: var(--color-text-muted); }
+        .field-optional { font-size: 11px; color: var(--color-text-muted); font-weight: 400; }
+        .provider-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .provider-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px; border-radius: 8px; border: 1.5px solid var(--color-border); background: white; cursor: pointer; transition: all 0.2s; font-size: 13px; }
+        .provider-btn:hover { border-color: var(--color-primary-light); background: var(--color-bg-subtle); }
+        .provider-btn.active { border-color: var(--color-primary); background: #EBF5FF; }
+        .provider-icon { font-size: 20px; }
+        .provider-name { font-size: 12px; font-weight: 500; color: var(--color-text); }
+        .input-group { display: flex; gap: 0; }
+        .input-icon-btn { display: flex; align-items: center; justify-content: center; padding: 0 12px; border: 1px solid var(--color-border); border-left: none; background: var(--color-bg-subtle); cursor: pointer; color: var(--color-text-muted); }
+        .input-icon-btn:hover { color: var(--color-text); }
+        .settings-row { display: flex; gap: 12px; }
+        .settings-row .settings-field { flex: 1; }
+        .settings-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .toggle-label { font-size: 13px; font-weight: 500; color: var(--color-text); }
+        .toggle-desc { font-size: 11px; color: var(--color-text-muted); margin-top: 2px; }
+        .toggle-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; inset: 0; background-color: var(--color-border); border-radius: 22px; transition: 0.3s; }
+        .toggle-slider::before { position: absolute; content: ''; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: 0.3s; }
+        .toggle-switch input:checked + .toggle-slider { background-color: var(--color-primary); }
+        .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+        .test-result { display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 6px 12px; border-radius: 6px; }
+        .test-result.ok { background: #F0FDF4; color: #16A34A; border: 1px solid #BBF7D0; }
+        .test-result.fail { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
       `}</style>
     </div>
   )
