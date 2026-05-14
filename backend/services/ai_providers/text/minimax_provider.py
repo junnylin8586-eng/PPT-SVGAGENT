@@ -29,6 +29,20 @@ class MiniMaxTextProvider(TextProvider):
             return ""
         return strip_think_tags(content)
 
+    def generate_text_messages(self, messages: list, thinking_budget: int = 0) -> str:
+        """
+        Generate text with a list of messages (multi-turn conversation).
+        messages: [{"role": "user"|"assistant"|"system", "content": "..."}]
+        """
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=messages
+        )
+        content = response.choices[0].message.content
+        if content is None:
+            return ""
+        return strip_think_tags(content)
+
     def generate_text_stream(self, prompt: str, thinking_budget: int = 0) -> Generator[str, None, None]:
         """Stream text with MiniMax model."""
         response = self.client.chat.completions.create(

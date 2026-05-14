@@ -16,6 +16,7 @@ from flask_cors import CORS
 from models import db
 from controllers.ppt_controller import ppt_bp
 from controllers.settings_controller import settings_bp
+from controllers.chat_controller import chat_bp
 
 
 @event.listens_for(Engine, "connect")
@@ -67,6 +68,7 @@ def create_app():
     # Register blueprints
     app.register_blueprint(ppt_bp)
     app.register_blueprint(settings_bp)
+    app.register_blueprint(chat_bp)
 
     # Health check
     @app.route('/health')
