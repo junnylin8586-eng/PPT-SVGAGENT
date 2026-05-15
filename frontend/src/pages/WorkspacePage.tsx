@@ -259,24 +259,24 @@ export default function WorkspacePage() {
     <div className="workspace">
       {/* Topbar */}
       <div className="workspace-topbar">
+        <button className="btn-back" onClick={() => navigate('/')}>
+          <ArrowLeft size={18} /> 返回
+        </button>
         <div className="topbar-info">
-          <button className="btn-back" onClick={() => navigate('/')}>
-            <ArrowLeft size={18} /> 返回
-          </button>
           <h1 className="topbar-title">{project?.name || '工作区'}</h1>
           <span className="page-count-badge">
             {generatedCount > 0 ? `${generatedCount}/${pages.length} 页已生成` : `${pages.length} 页`}
           </span>
-          <button className="btn-icon" onClick={() => setShowSettings(true)} title="全局设置" style={{ marginLeft: 'auto' }}>
-            <Settings size={15} /> 设置
-          </button>
         </div>
         <div className="topbar-actions">
-          <button className="btn-icon" onClick={() => { setShowSettings(false); setShowOutlineEditor(true) }} title="编辑大纲">
+          <button className="btn-icon" onClick={() => setShowOutlineEditor(true)} title="编辑大纲">
             <Edit3 size={15} /> 大纲
           </button>
-          <button className="btn-icon" onClick={() => { setShowSettings(false); setShowStyleSettings(true) }} title="样式设置">
+          <button className="btn-icon" onClick={() => setShowStyleSettings(true)} title="样式设置">
             <Palette size={15} /> 样式
+          </button>
+          <button className="btn-icon" onClick={() => setShowSettings(true)} title="AI 设置">
+            <Settings size={15} /> 设置
           </button>
           <button className="btn-icon" onClick={() => setShowTemplateModal(true)} title="更换模板">
             <Layout size={15} /> 模板
@@ -524,10 +524,7 @@ export default function WorkspacePage() {
         .workspace-topbar { display: flex; align-items: center; gap: 10px; padding: 10px 20px; background: white; border-bottom: 1px solid var(--color-border); flex-shrink: 0; }
         .btn-back { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--color-border); background: white; color: var(--color-text-muted); font-size: 13px; cursor: pointer; }
         .btn-back:hover { background: var(--color-bg-subtle); }
-        .topbar-info { flex: 1; display: flex; align-items: center; gap: 8px; }
-        .topbar-title { font-size: 16px; font-weight: 600; color: var(--color-text); flex-shrink: 0; }
-        .page-count-badge { font-size: 12px; color: var(--color-text-muted); background: var(--color-bg-subtle); padding: 3px 10px; border-radius: 12px; flex-shrink: 0; }
-        .topbar-info .btn-icon { flex-shrink: 0; }
+        .topbar-info { flex: 1; display: flex; align-items: center; gap: 10px; }
         .btn-icon { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--color-border); background: white; color: var(--color-text-muted); font-size: 13px; cursor: pointer; }
         .btn-icon:hover { background: var(--color-bg-subtle); color: var(--color-text); }
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; }
