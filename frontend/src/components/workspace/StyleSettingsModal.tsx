@@ -206,15 +206,9 @@ export default function StyleSettingsModal({ open, projectId, initial, onClose, 
       </div>
 
       <style>{`
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(2px); }
-        .modal-box { background: white; border-radius: 12px; width: 520px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; }
-        .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--color-border); }
-        .modal-header h2 { font-size: 16px; font-weight: 600; color: var(--color-text); }
-        .modal-close { width: 30px; height: 30px; border-radius: 6px; border: none; background: var(--color-bg-subtle); color: var(--color-text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .tab-bar { display: flex; border-bottom: 1px solid var(--color-border); padding: 0 24px; background: var(--color-bg-subtle); }
         .tab { padding: 10px 16px; border: none; background: none; font-size: 13px; font-weight: 500; color: var(--color-text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
         .tab.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
-        .modal-body { padding: 20px 24px; max-height: 65vh; overflow-y: auto; }
         .theme-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .theme-card { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 2px solid var(--color-border); border-radius: 8px; cursor: pointer; transition: all 0.2s; position: relative; }
         .theme-card:hover { border-color: var(--color-primary-light); transform: translateY(-1px); }
@@ -248,13 +242,7 @@ export default function StyleSettingsModal({ open, projectId, initial, onClose, 
         .layout-item.selected { border-color: var(--color-primary); background: #EBF5FF; }
         .layout-label { font-size: 13px; font-weight: 600; color: var(--color-text); width: 48px; }
         .layout-desc { font-size: 12px; color: var(--color-text-muted); flex: 1; }
-        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 24px; border-top: 1px solid var(--color-border); background: var(--color-bg-subtle); }
-        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
-        .btn-secondary { background: white; color: var(--color-text); border: 1px solid var(--color-border); }
-        .btn-secondary:hover { background: var(--color-bg-subtle); }
-        .btn-primary { background: var(--color-primary); color: white; }
-        .btn-primary:hover { background: var(--color-primary-light); }
-        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
       `}</style>
     </div>
   )

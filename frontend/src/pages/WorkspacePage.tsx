@@ -268,32 +268,38 @@ export default function WorkspacePage() {
             {generatedCount > 0 ? `${generatedCount}/${pages.length} 页已生成` : `${pages.length} 页`}
           </span>
         </div>
+        <div className="topbar-divider" />
         <div className="topbar-actions">
-          <button className="btn-icon" onClick={() => setShowOutlineEditor(true)} title="编辑大纲">
-            <Edit3 size={15} /> 大纲
-          </button>
-          <button className="btn-icon" onClick={() => setShowStyleSettings(true)} title="样式设置">
-            <Palette size={15} /> 样式
-          </button>
-          <button className="btn-icon" onClick={() => setShowSettings(true)} title="AI 设置">
-            <Settings size={15} /> 设置
-          </button>
-          <button className="btn-icon" onClick={() => setShowTemplateModal(true)} title="更换模板">
-            <Layout size={15} /> 模板
-          </button>
-          <button
-            className="btn btn-primary"
-            onClick={handleGenerate}
-            disabled={genStatus === 'generating'}
-          >
-            <RefreshCw size={14} className={genStatus === 'generating' ? 'spin' : ''} />
-            {genStatus === 'generating' ? '生成中...' : '开始生成'}
-          </button>
-          {generatedCount > 0 && (
-            <button className="btn btn-green" onClick={() => setShowExport(true)}>
-              <Download size={14} /> 导出
+          <div className="toolbar-group">
+            <button className="tool-btn" onClick={() => setShowOutlineEditor(true)} title="编辑大纲">
+              <Edit3 size={15} /> 大纲
             </button>
-          )}
+            <button className="tool-btn" onClick={() => setShowStyleSettings(true)} title="样式设置">
+              <Palette size={15} /> 样式
+            </button>
+            <button className="tool-btn" onClick={() => setShowSettings(true)} title="AI 设置">
+              <Settings size={15} /> 设置
+            </button>
+            <button className="tool-btn" onClick={() => setShowTemplateModal(true)} title="更换模板">
+              <Layout size={15} /> 模板
+            </button>
+          </div>
+          <div className="toolbar-divider" />
+          <div className="toolbar-group">
+            <button
+              className="btn btn-primary"
+              onClick={handleGenerate}
+              disabled={genStatus === 'generating'}
+            >
+              <RefreshCw size={14} className={genStatus === 'generating' ? 'spin' : ''} />
+              {genStatus === 'generating' ? '生成中...' : '开始生成'}
+            </button>
+            {generatedCount > 0 && (
+              <button className="btn btn-green" onClick={() => setShowExport(true)}>
+                <Download size={14} /> 导出
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -521,12 +527,19 @@ export default function WorkspacePage() {
 
       <style>{`
         .workspace { display: flex; flex-direction: column; height: calc(100vh - 56px); }
-        .workspace-topbar { display: flex; align-items: center; gap: 10px; padding: 10px 20px; background: white; border-bottom: 1px solid var(--color-border); flex-shrink: 0; }
-        .btn-back { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--color-border); background: white; color: var(--color-text-muted); font-size: 13px; cursor: pointer; }
-        .btn-back:hover { background: var(--color-bg-subtle); }
-        .topbar-info { flex: 1; display: flex; align-items: center; gap: 10px; }
-        .btn-icon { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--color-border); background: white; color: var(--color-text-muted); font-size: 13px; cursor: pointer; }
-        .btn-icon:hover { background: var(--color-bg-subtle); color: var(--color-text); }
+        .workspace-topbar { display: flex; align-items: center; gap: 0; padding: 10px 20px; background: white; border-bottom: 1px solid var(--color-border); flex-shrink: 0; }
+        .btn-back { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 6px; border: 1px solid var(--color-border); background: white; color: var(--color-text-muted); font-size: 13px; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
+        .btn-back:hover { background: var(--color-bg-subtle); color: var(--color-text); }
+        .topbar-info { flex: 1; display: flex; align-items: center; gap: 10px; padding: 0 16px; min-width: 0; }
+        .topbar-title { font-size: 15px; font-weight: 600; color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .page-count-badge { font-size: 12px; color: var(--color-text-muted); background: var(--color-bg-subtle); padding: 2px 10px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; }
+        .topbar-divider { width: 1px; height: 28px; background: var(--color-border); flex-shrink: 0; margin: 0 4px; }
+        .topbar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .toolbar-group { display: flex; align-items: center; gap: 2px; }
+        .toolbar-divider { width: 1px; height: 22px; background: var(--color-border); margin: 0 4px; }
+        .tool-btn { display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px; border-radius: 6px; border: none; background: transparent; color: var(--color-text-muted); font-size: 13px; cursor: pointer; transition: all 0.15s; }
+        .tool-btn:hover { background: var(--color-bg-subtle); color: var(--color-text); }
+        .tool-btn:active { background: var(--color-border); }
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; }
         .btn-primary { background: var(--color-primary); color: white; }
         .btn-primary:hover { background: var(--color-primary-light); }
