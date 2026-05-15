@@ -281,9 +281,6 @@ export default function WorkspacePage() {
           <button className="btn-icon" onClick={() => setShowTemplateModal(true)} title="更换模板">
             <Layout size={15} /> 模板
           </button>
-          <button className="btn-icon" onClick={() => navigate('/')} title="新建项目">
-            <Plus size={15} /> 新建
-          </button>
           <button
             className="btn btn-primary"
             onClick={handleGenerate}
@@ -527,10 +524,10 @@ export default function WorkspacePage() {
         .workspace-topbar { display: flex; align-items: center; gap: 10px; padding: 10px 20px; background: white; border-bottom: 1px solid var(--color-border); flex-shrink: 0; }
         .btn-back { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--color-border); background: white; color: var(--color-text-muted); font-size: 13px; cursor: pointer; }
         .btn-back:hover { background: var(--color-bg-subtle); }
-        .topbar-info { flex: 1; display: flex; align-items: center; gap: 10px; }
-        .topbar-title { font-size: 16px; font-weight: 600; color: var(--color-text); }
-        .page-count-badge { font-size: 12px; color: var(--color-text-muted); background: var(--color-bg-subtle); padding: 3px 10px; border-radius: 12px; }
-        .topbar-actions { display: flex; align-items: center; gap: 8px; }
+        .topbar-info { flex: 1; display: flex; align-items: center; gap: 8px; }
+        .topbar-title { font-size: 16px; font-weight: 600; color: var(--color-text); flex-shrink: 0; }
+        .page-count-badge { font-size: 12px; color: var(--color-text-muted); background: var(--color-bg-subtle); padding: 3px 10px; border-radius: 12px; flex-shrink: 0; }
+        .topbar-info .btn-icon { flex-shrink: 0; }
         .btn-icon { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--color-border); background: white; color: var(--color-text-muted); font-size: 13px; cursor: pointer; }
         .btn-icon:hover { background: var(--color-bg-subtle); color: var(--color-text); }
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; }
