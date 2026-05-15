@@ -581,7 +581,7 @@ export default function WorkspacePage() {
         .loading-center { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 80px; color: var(--color-text-muted); }
 
         /* SettingsModal */
-        .settings-modal-box { width: 560px; max-height: 80vh; display: flex; flex-direction: column; }
+        .settings-modal-box { width: 720px; max-height: 80vh; display: flex; flex-direction: column; }
         .settings-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--color-border); padding: 0 4px; flex-shrink: 0; }
         .settings-tab { display: flex; align-items: center; gap: 6px; padding: 10px 16px; border: none; background: none; cursor: pointer; font-size: 13px; color: var(--color-text-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; }
         .settings-tab:hover { color: var(--color-text); }
@@ -593,8 +593,8 @@ export default function WorkspacePage() {
         .settings-field > label { font-size: 13px; font-weight: 500; color: var(--color-text); }
         .field-hint { font-size: 11px; color: var(--color-text-muted); }
         .field-optional { font-size: 11px; color: var(--color-text-muted); font-weight: 400; }
-        .provider-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .provider-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px; border-radius: 8px; border: 1.5px solid var(--color-border); background: white; cursor: pointer; transition: all 0.2s; font-size: 13px; }
+        .provider-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .provider-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 12px; border-radius: 10px; border: 2px solid var(--color-border); background: white; cursor: pointer; transition: all 0.2s; font-size: 13px; }
         .provider-btn:hover { border-color: var(--color-primary-light); background: var(--color-bg-subtle); }
         .provider-btn.active { border-color: var(--color-primary); background: #EBF5FF; }
         .provider-icon { font-size: 20px; }
