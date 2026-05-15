@@ -80,7 +80,9 @@ export default function WorkspacePage() {
           const text = await res.text()
           updateSvgContents(prev => ({ ...prev, [page.page_id]: text }))
         }
-      } catch { /* ignore */ } finally {
+      } catch (err) {
+        console.error('[loadSvgContent] Failed to load SVG for page', page.page_id, page.svg_path, err)
+      } finally {
         setLoadingPageId(prev => prev === page.page_id ? null : prev)
       }
     }
@@ -166,8 +168,26 @@ export default function WorkspacePage() {
       })
 
       // Generate SVGs for ALL existing pages — no per-page confirmation needed
+      // Backend is synchronous: all pages are generated before response returns
       await api.generate(projectId, selectedTemplate)
-      // Polling handles status updates and SVG loading — no manual timeout needed
+
+      // Bug Fix: Immediately reload data after synchronous generation completes,
+      // instead of waiting for the 3-second polling interval.
+      const freshPages = await api.getPages(projectId)
+      const freshPagesList: Page[] = freshPages.data || []
+      setPages(freshPagesList)
+      // Load all SVGs immediately — use Promise.all to ensure completion
+      const svgPages = freshPagesList.filter(p => p.status === 'GENERATED' && p.svg_path)
+      if (svgPages.length > 0) {
+        await Promise.all(svgPages.map(p => loadSvgContent(p)))
+      }
+      // Skip polling if everything is already done
+      const pendingIdx = freshPagesList.findIndex((p: Page) => p.status === 'GENERATING' || p.status === 'PENDING')
+      if (pendingIdx === -1) {
+        setGenStatus('completed')
+        setCurrentGenIdx(-1)
+        await loadProject()
+      }
     } catch (e: any) {
       setGenStatus('error')
       setGenError(e.message || '生成失败')
@@ -231,12 +251,18 @@ export default function WorkspacePage() {
         const fres = await fetch(`${api.getFileUrl(`${projectId}/${filename}`)}?_t=${Date.now()}`)
         if (fres.ok) {
           const text = await fres.text()
-          setSvgContents(prev => ({ ...prev, [page.page_id]: text }))
+          // Bug Fix: Use updateSvgContents to keep svgContentsRef in sync
+          // (raw setSvgContents bypasses the ref update)
+          updateSvgContents(prev => ({ ...prev, [page.page_id]: text }))
+        } else {
+          console.error('[regenerate] SVG fetch failed:', fres.status, fres.statusText)
         }
+      } else {
+        console.error('[regenerate] Updated page has no svg_path:', updatedPage)
       }
       setPages(pageRes.data || [])
     } catch (err) {
-      console.error('单页生成失败', err)
+      console.error('[regenerate] 单页生成失败', err)
     } finally {
       setRegeneratingPageId(null)
     }
