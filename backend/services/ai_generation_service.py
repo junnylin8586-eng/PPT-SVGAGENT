@@ -105,7 +105,7 @@ def build_page_generation_prompt(
     return prompt
 
 
-def call_minimax_llm(prompt: str, model: str = 'MiniMax-M2.7') -> str:
+def call_minimax_llm(prompt: str, model: str = 'MiniMax-M2.7', fallback_outline: str = '') -> str:
     """
     直接调用 MiniMax Chat Completions API。
     使用 mmx-cli 作为 HTTP 代理调用。
@@ -134,7 +134,7 @@ def call_minimax_llm(prompt: str, model: str = 'MiniMax-M2.7') -> str:
     api_key = os.environ.get('MINIMAX_API_KEY') or os.environ.get('MINIMAX_CN_API_KEY', '')
     if not api_key:
         logger.warning('[AI Gen] No MINIMAX_API_KEY found, using fallback')
-        return get_fallback_svg(page_outline)
+        return get_fallback_svg(fallback_outline)
 
     headers = {
         'Authorization': f'Bearer {api_key}',
@@ -154,7 +154,7 @@ def call_minimax_llm(prompt: str, model: str = 'MiniMax-M2.7') -> str:
             return result['choices'][0]['message']['content']
     except Exception as e:
         logger.error(f'[AI Gen] API call failed: {e}')
-        return get_fallback_svg(page_outline)
+        return get_fallback_svg(fallback_outline)
 
 
 def extract_svg_from_response(response: str) -> Optional[str]:
@@ -219,7 +219,7 @@ def generate_page_svg(
         layout_style=layout_style,
     )
 
-    response = call_minimax_llm(prompt)
+    response = call_minimax_llm(prompt, fallback_outline=effective_outline)
     svg_content = extract_svg_from_response(response)
 
     if not svg_content:

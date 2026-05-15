@@ -159,18 +159,24 @@ export const api = {
 
   // Generate
   generate(projectId: string, template?: string): Promise<any> {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 600_000) // 10 min timeout
     return request(`/projects/${projectId}/generate`, {
       method: 'POST',
       body: JSON.stringify({ template: template || 'government_blue' }),
-    })
+      signal: controller.signal,
+    }).finally(() => clearTimeout(timeoutId))
   },
 
   // Generate single page
   generatePage(projectId: string, pageId: string, template?: string): Promise<any> {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 300_000) // 5 min timeout
     return request(`/projects/${projectId}/pages/${pageId}/generate`, {
       method: 'POST',
       body: JSON.stringify({ template: template || 'government_blue' }),
-    })
+      signal: controller.signal,
+    }).finally(() => clearTimeout(timeoutId))
   },
 
   // Export

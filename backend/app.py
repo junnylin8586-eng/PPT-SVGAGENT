@@ -41,8 +41,10 @@ def create_app():
     db_path = os.path.join(instance_dir, 'ppt_agent.db')
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-        'pool_size': 1,
-        'pool_recycle': 30,
+        'pool_size': 5,  # 提高到5以支持Flask debug模式多进程+并发请求
+        'max_overflow': 5,
+        'pool_recycle': 300,
+        'pool_pre_ping': True,
         'connect_args': {
             'check_same_thread': False,
             'timeout': 30,

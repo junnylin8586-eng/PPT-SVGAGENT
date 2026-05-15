@@ -120,7 +120,8 @@ def update_project(project_id):
             if field in data:
                 setattr(project, field, data[field])
         project.updated_at = datetime.utcnow()
-        db.session.commit()
+        from utils.db_retry import retry_on_lock
+        retry_on_lock(db.session.commit)()
         return success_response(project.to_dict())
     except Exception as e:
         db.session.rollback()
@@ -189,7 +190,9 @@ def create_pages_batch(project_id):
                 # Store per-page generation instruction (full body text)
                 if item.get('page_instruction'):
                     existing.set_description_content(item['page_instruction'])
-                    existing.status = 'DESCRIPTION_GENERATED'
+                # Reset to PENDING so trigger_generation can find and regenerate this page
+                existing.status = 'PENDING'
+                existing.svg_path = None  # Clear old SVG
                 created.append(existing)
             else:
                 has_instruction = bool(item.get('page_instruction'))
@@ -207,7 +210,8 @@ def create_pages_batch(project_id):
 
         project.updated_at = datetime.utcnow()
         project.status = 'GENERATING'
-        db.session.commit()
+        from utils.db_retry import retry_on_lock
+        retry_on_lock(db.session.commit)()
         return success_response({'pages': [p.to_dict() for p in created]}, 201)
 
     except Exception as e:
@@ -227,9 +231,9 @@ def update_page(project_id, page_id):
         data = request.get_json() or {}
         if 'outline_content' in data:
             page.set_outline_content(data['outline_content'])
+            page.status = 'PENDING'  # Reset for regeneration
         if 'description_content' in data:
             page.set_description_content(data['description_content'])
-            page.status = 'DESCRIPTION_GENERATED'
         if 'part' in data:
             page.part = data['part']
         if 'status' in data:
@@ -300,18 +304,19 @@ def trigger_generation(project_id):
         data = request.get_json() or {}
         template_name = data.get('template', project.template_path or 'government_blue')
 
+        # Get ALL non-deleted pages (not just PENDING) — regenerate everything
         pages = Page.query.filter_by(
-            project_id=project_id, is_deleted=False, status='PENDING'
+            project_id=project_id, is_deleted=False
         ).order_by(Page.order_index).all()
 
         if not pages:
-            # 没有 PENDING 页面，尝试为所有页面重新生成
-            pages = Page.query.filter_by(
-                project_id=project_id, is_deleted=False
-            ).order_by(Page.order_index).all()
-
-        if not pages:
             return error_response('No pages to generate. Create pages first.')
+
+        # Reset ALL pages to PENDING before generation so polling can track progress
+        for p in pages:
+            p.status = 'PENDING'
+            p.svg_path = None  # Clear stale SVG path
+        db.session.commit()
 
         task_id = f"ppt_gen_{uuid.uuid4().hex[:8]}"
         logger.info(f"[PPT] Task {task_id}: Generating {len(pages)} pages with template={template_name}")
@@ -343,7 +348,8 @@ def trigger_generation(project_id):
                 logger.warning(f'[PPT] Task {task_id}: Auto outline failed: {e}', exc_info=True)
 
         # Commit outline changes BEFORE generation (SVG can take a long time)
-        db.session.commit()
+        from utils.db_retry import retry_on_lock
+        retry_on_lock(db.session.commit)()
         logger.info(f'[PPT] Task {task_id}: Outline auto-fill committed, starting SVG generation...')
         project_idea = (project.idea_prompt or project.outline_text or project.description_text or '')
         primary_color = project.primary_color or '#003371'
@@ -362,27 +368,41 @@ def trigger_generation(project_id):
                 logger.warning(f'[PPT] Task {task_id}: Skipping page {page.order_index} - empty outline')
                 page.status = 'SKIPPED'
                 continue
-            result = generate_page_svg(
-                project_idea=project_idea,
-                outline_content=page_idea,
-                page_instruction=page_instruction,
-                template_name=template_name,
-                page_index=page.order_index + 1,
-                output_dir=project_svg_dir,
-                primary_color=primary_color,
-                font_family=font_family,
-                layout_style=layout_style,
-            )
-            # 保存相对路径
-            svg_filename = os.path.basename(result['svg_path'])
-            svg_rel_path = f'{project_id}/{svg_filename}'
-            page.svg_path = svg_rel_path
-            page.status = 'GENERATED'
-            results.append({'page_id': page.id, 'svg_path': svg_rel_path, 'page_index': page.order_index})
+            try:
+                result = generate_page_svg(
+                    project_idea=project_idea,
+                    outline_content=page_idea,
+                    page_instruction=page_instruction,
+                    template_name=template_name,
+                    page_index=page.order_index + 1,
+                    output_dir=project_svg_dir,
+                    primary_color=primary_color,
+                    font_family=font_family,
+                    layout_style=layout_style,
+                )
+                # 保存相对路径
+                svg_filename = os.path.basename(result['svg_path'])
+                svg_rel_path = f'{project_id}/{svg_filename}'
+                page.svg_path = svg_rel_path
+                page.status = 'GENERATED'
+                results.append({'page_id': page.id, 'svg_path': svg_rel_path, 'page_index': page.order_index})
+                # Commit after each page so polling sees progress
+                try:
+                    db.session.commit()
+                except Exception:
+                    pass
+            except Exception as gen_err:
+                logger.error(f'[PPT] Task {task_id}: Page {page.order_index} generation failed: {gen_err}', exc_info=True)
+                page.status = 'FAILED'
+                # Commit individual page status so polling can see progress
+                try:
+                    db.session.commit()
+                except Exception:
+                    pass
 
         project.status = 'COMPLETED'
         project.updated_at = datetime.utcnow()
-        db.session.commit()
+        retry_on_lock(db.session.commit)()
 
         return success_response({
             'task_id': task_id,
@@ -444,7 +464,8 @@ def regenerate_single_page(project_id, page_id):
         page.status = 'GENERATED'
         project.status = 'COMPLETED'
         project.updated_at = datetime.utcnow()
-        db.session.commit()
+        from utils.db_retry import retry_on_lock
+        retry_on_lock(db.session.commit)()
 
         return success_response({'page': page.to_dict(), 'svg_path': svg_rel_path})
 

@@ -88,13 +88,8 @@ export default function WorkspacePage() {
     }
   }, [projectId, updateSvgContents])
 
-  // Clear SVG cache when generation starts, so old slides don't linger
-  useEffect(() => {
-    if (genStatus === 'generating') {
-      setSvgContents({})
-      svgContentsRef.current = {}
-    }
-  }, [genStatus])
+  // Do NOT clear SVG cache when generation starts — keep showing existing
+  // slides while waiting for new ones to generate (can take 2-3 min per page)
 
   // Reload all SVGs when generation completes
   useEffect(() => {
@@ -160,12 +155,17 @@ export default function WorkspacePage() {
 
       const freshProject = await api.getProject(projectId)
       const latestProject = freshProject.data
-      await api.updateProject(projectId, {
-        template_path: selectedTemplate,
-        primary_color: latestProject.primary_color,
-        font_family: latestProject.font_family,
-        layout_style: latestProject.layout_style,
-      })
+      // Update project settings before generation (non-blocking — don't throw on SQLite lock)
+      try {
+        await api.updateProject(projectId, {
+          template_path: selectedTemplate,
+          primary_color: latestProject.primary_color,
+          font_family: latestProject.font_family,
+          layout_style: latestProject.layout_style,
+        })
+      } catch (updateErr) {
+        console.warn('[handleGenerate] updateProject failed (non-blocking):', updateErr)
+      }
 
       // Generate SVGs for ALL existing pages — no per-page confirmation needed
       // Backend is synchronous: all pages are generated before response returns
@@ -221,20 +221,31 @@ export default function WorkspacePage() {
   const handleSaveAllPages = async () => {
     if (!projectId || pages.length === 0) return
     setSavingAll(true)
-    try {
-      const outlines = pages.map(p => ({
-        order_index: p.order_index,
-        outline_content: p.outline_content || '',
-        part: p.part || '',
-        page_instruction: p.description_content || '',
-      }))
-      await api.createPages(projectId!, outlines)
-      await loadProject()
-    } catch (e) {
-      console.error('批量保存失败', e)
-    } finally {
-      setSavingAll(false)
+    // Retry up to 3 times on SQLite lock errors
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const outlines = pages.map(p => ({
+          order_index: p.order_index,
+          outline_content: p.outline_content || '',
+          part: p.part || '',
+          page_instruction: p.description_content || '',
+        }))
+        await api.createPages(projectId!, outlines)
+        await loadProject()
+        setSavingAll(false)
+        return // success, exit retry loop
+      } catch (e: any) {
+        const isLocked = e?.message?.includes('database is locked') || e?.message?.includes('locked')
+        if (attempt < 2 && isLocked) {
+          console.warn(`[saveAll] Database locked, retry ${attempt + 1}/3...`)
+          await new Promise(r => setTimeout(r, 500 * (attempt + 1)))
+          continue
+        }
+        console.error('[saveAll] 批量保存失败', e)
+        break
+      }
     }
+    setSavingAll(false)
   }
 
   const handleRegeneratePage = async (page: Page, e?: React.MouseEvent) => {
