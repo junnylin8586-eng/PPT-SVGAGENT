@@ -97,7 +97,12 @@ export default function TemplateSelectorModal({ open, selected, onSelect, onClos
                 >
                   {/* 缩略图 */}
                   <div className="tmpl-thumb">
-                    <Layout size={28} color="rgba(0,51,113,0.3)" />
+                    <img
+                      src={`/template_thumbs/${t.layout_id}.png`}
+                      alt={t.name}
+                      className="tmpl-thumb-img"
+                      onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                    />
                     {selected === t.layout_id && (
                       <div className="tmpl-selected-badge">
                         <Check size={14} color="white" />
@@ -143,7 +148,8 @@ export default function TemplateSelectorModal({ open, selected, onSelect, onClos
         .tmpl-card { border: 2px solid var(--color-border); border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.2s; background: white; }
         .tmpl-card:hover { border-color: var(--color-primary-light); transform: translateY(-2px); box-shadow: var(--shadow-md); }
         .tmpl-card.selected { border-color: var(--color-primary); }
-        .tmpl-thumb { width: 100%; aspect-ratio: 16/9; background: var(--color-bg-subtle); display: flex; align-items: center; justify-content: center; position: relative; }
+        .tmpl-thumb { width: 100%; aspect-ratio: 16/9; background: var(--color-bg-subtle); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .tmpl-thumb-img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .tmpl-selected-badge { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; background: var(--color-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .tmpl-info { padding: 12px; display: flex; flex-direction: column; gap: 2px; }
         .tmpl-name { font-size: 13px; font-weight: 600; color: var(--color-text); }
