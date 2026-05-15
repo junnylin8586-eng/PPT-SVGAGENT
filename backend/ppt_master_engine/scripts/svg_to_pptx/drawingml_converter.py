@@ -204,7 +204,7 @@ def convert_g(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
 # Defs collection & element dispatch
 # ---------------------------------------------------------------------------
 
-_NON_VISUAL_TAGS = frozenset(('defs', 'title', 'desc', 'metadata', 'style'))
+_NON_VISUAL_TAGS = frozenset(('defs', 'title', 'desc', 'metadata', 'style', 'pattern'))
 
 
 def _supports_matrix_transform(elem: ET.Element) -> bool:
