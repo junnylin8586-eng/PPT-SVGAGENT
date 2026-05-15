@@ -25,6 +25,7 @@ export default function WorkspacePage() {
   const [genStatus, setGenStatus] = useState<GenStatus>('idle')
   const [genError, setGenError] = useState('')
   const [currentGenIdx, setCurrentGenIdx] = useState(-1)
+  const [completedDismissed, setCompletedDismissed] = useState(false)
   const [selectedPage, setSelectedPage] = useState<Page | null>(null)
   const [svgContents, setSvgContents] = useState<Record<string, string>>({})
   const [showTemplateModal, setShowTemplateModal] = useState(false)
@@ -96,8 +97,17 @@ export default function WorkspacePage() {
   // Reload all SVGs when generation completes
   useEffect(() => {
     if (genStatus !== 'completed') return
-    pages.filter(p => p.svg_path).forEach(p => loadSvgContent(p))
-  }, [genStatus, pages, loadSvgContent])
+    let cancelled = false
+    const reload = async () => {
+      const pageRes = await api.getPages(projectId!)
+      if (cancelled) return
+      const updated: Page[] = pageRes.data || []
+      setPages(updated)
+      await Promise.all(updated.filter(p => p.status === 'GENERATED' && p.svg_path).map(p => loadSvgContent(p)))
+    }
+    reload()
+    return () => { cancelled = true }
+  }, [genStatus, projectId, loadSvgContent])
 
   useEffect(() => {
     pages.filter(p => p.svg_path && !svgContents[p.page_id] && !loadingPageId).forEach(loadSvgContent)
@@ -138,6 +148,7 @@ export default function WorkspacePage() {
     setGenStatus('generating')
     setGenError('')
     setCurrentGenIdx(0)
+    setCompletedDismissed(false)
     try {
       // Always refresh pages from API first — ensures all pages
       // (newly added, edited, unsaved) are included in generation
@@ -211,18 +222,18 @@ export default function WorkspacePage() {
     if (!projectId) return
     setRegeneratingPageId(page.page_id)
     try {
-      const res = await api.generatePage(projectId, page.page_id, selectedTemplate)
-      const updated = res.page || res
-      if (updated?.svg_path) {
-        const filename = updated.svg_path.split('/').pop()
-        // Cache-bust with timestamp so browser gets fresh SVG
+      await api.generatePage(projectId, page.page_id, selectedTemplate)
+      // 强制重新拉取最新页面列表（含 svg_path 更新）
+      const pageRes = await api.getPages(projectId)
+      const updatedPage = (pageRes.data || []).find((p: Page) => p.page_id === page.page_id)
+      if (updatedPage?.svg_path) {
+        const filename = updatedPage.svg_path.split('/').pop()
         const fres = await fetch(`${api.getFileUrl(`${projectId}/${filename}`)}?_t=${Date.now()}`)
         if (fres.ok) {
           const text = await fres.text()
           setSvgContents(prev => ({ ...prev, [page.page_id]: text }))
         }
       }
-      const pageRes = await api.getPages(projectId)
       setPages(pageRes.data || [])
     } catch (err) {
       console.error('单页生成失败', err)
@@ -248,27 +259,30 @@ export default function WorkspacePage() {
     <div className="workspace">
       {/* Topbar */}
       <div className="workspace-topbar">
-        <button className="btn-back" onClick={() => navigate('/')}>
-          <ArrowLeft size={18} /> 返回
-        </button>
         <div className="topbar-info">
+          <button className="btn-back" onClick={() => navigate('/')}>
+            <ArrowLeft size={18} /> 返回
+          </button>
           <h1 className="topbar-title">{project?.name || '工作区'}</h1>
           <span className="page-count-badge">
             {generatedCount > 0 ? `${generatedCount}/${pages.length} 页已生成` : `${pages.length} 页`}
           </span>
+          <button className="btn-icon" onClick={() => setShowSettings(true)} title="全局设置" style={{ marginLeft: 'auto' }}>
+            <Settings size={15} /> 设置
+          </button>
         </div>
         <div className="topbar-actions">
-          <button className="btn-icon" onClick={() => setShowOutlineEditor(true)} title="编辑大纲">
+          <button className="btn-icon" onClick={() => { setShowSettings(false); setShowOutlineEditor(true) }} title="编辑大纲">
             <Edit3 size={15} /> 大纲
           </button>
-          <button className="btn-icon" onClick={() => setShowStyleSettings(true)} title="样式设置">
+          <button className="btn-icon" onClick={() => { setShowSettings(false); setShowStyleSettings(true) }} title="样式设置">
             <Palette size={15} /> 样式
-          </button>
-          <button className="btn-icon" onClick={() => setShowSettings(true)} title="AI 设置">
-            <Settings size={15} /> 设置
           </button>
           <button className="btn-icon" onClick={() => setShowTemplateModal(true)} title="更换模板">
             <Layout size={15} /> 模板
+          </button>
+          <button className="btn-icon" onClick={() => navigate('/')} title="新建项目">
+            <Plus size={15} /> 新建
           </button>
           <button
             className="btn btn-primary"
@@ -289,10 +303,27 @@ export default function WorkspacePage() {
       {/* Body */}
       <div className="workspace-body">
         {/* Left Panel */}
-        <div className="page-list-panel">
-          {genStatus !== 'idle' && (
-            <div className="panel-section">
+        <div className="page-list-panel" style={{ position: 'relative' }}>
+          {genStatus === 'generating' && (
+            <div className="gen-fullscreen-overlay">
               <GenerationProgress pages={pages} currentIndex={currentGenIdx} status={genStatus} error={genError} />
+            </div>
+          )}
+          {genStatus === 'completed' && !completedDismissed && (
+            <div className="gen-complete-overlay">
+              <div className="gen-complete-card">
+                <CheckCircle size={40} color="#00875A" />
+                <span style={{ fontSize: 16, fontWeight: 600, color: '#00875A' }}>全部幻灯片生成完成</span>
+                <span style={{ fontSize: 13, color: '#666' }}>{pages.length} 页已就绪</span>
+                <button className="btn btn-primary" style={{ marginTop: 8 }} onClick={() => { setGenStatus('idle'); setCompletedDismissed(false) }}>查看结果</button>
+              </div>
+            </div>
+          )}
+          {genStatus === 'idle' && (
+            <div className="panel-section">
+              <div className="panel-header-row">
+                <span>幻灯片</span>
+              </div>
             </div>
           )}
 
@@ -588,6 +619,10 @@ export default function WorkspacePage() {
         .test-result { display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 6px 12px; border-radius: 6px; }
         .test-result.ok { background: #F0FDF4; color: #16A34A; border: 1px solid #BBF7D0; }
         .test-result.fail { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+        .gen-fullscreen-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.96); z-index: 50; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .gen-complete-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.97); z-index: 50; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.3s ease; }
+        .gen-complete-card { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px 48px; background: white; border-radius: 12px; box-shadow: var(--shadow-lg); }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
       `}</style>
     </div>
   )

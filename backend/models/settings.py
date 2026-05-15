@@ -167,8 +167,17 @@ class Settings(db.Model):
     @staticmethod
     def _get_config_defaults():
         """Return a dict of default values from Config/env for settings fields."""
-        from config import Config
-        from config import MINIMAX_API_KEY, MINIMAX_API_BASE
+        import os as _os
+        # Import config with explicit path to avoid ppt_master_engine/scripts/config.py shadow
+        import importlib.util
+        _spec = importlib.util.spec_from_file_location('_cfg',
+            _os.path.join(_os.path.dirname(__file__), '..', 'config.py'))
+        _cfg = importlib.util.module_from_spec(_spec)
+        _spec.loader.exec_module(_cfg)
+        Config = _cfg.Config
+        # Also grab module-level MINIMAX vars
+        _minimax_key = getattr(_cfg, 'MINIMAX_API_KEY', '') or ''
+        _minimax_base = getattr(_cfg, 'MINIMAX_API_BASE', '') or ''
 
         return {
             'ai_provider_format': Config.AI_PROVIDER_FORMAT,
