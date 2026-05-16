@@ -265,12 +265,13 @@ export const api = {
   },
 
   // Multi-turn chat to generate PPT outline (SSE streaming)
+  // NOTE: chat_bp is mounted at /api/chat, NOT /api/ppt/chat
   generateOutline(messages: Array<{ role: string; content: string }>, isFinal = false): Observable<any> {
     return new Observable((subscriber) => {
       const controller = new AbortController()
       let buffer = ''
 
-      fetch(`${API_BASE}/chat/generate-outline`, {
+      fetch(`/api/chat/generate-outline`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages, final: isFinal }),
