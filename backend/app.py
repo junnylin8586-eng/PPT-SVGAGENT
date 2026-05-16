@@ -17,6 +17,7 @@ from models import db
 from controllers.ppt_controller import ppt_bp
 from controllers.settings_controller import settings_bp
 from controllers.chat_controller import chat_bp
+from controllers.template_custom_controller import template_custom_bp
 
 
 @event.listens_for(Engine, "connect")
@@ -71,6 +72,7 @@ def create_app():
     app.register_blueprint(ppt_bp)
     app.register_blueprint(settings_bp)
     app.register_blueprint(chat_bp)
+    app.register_blueprint(template_custom_bp)
 
     # Health check
     @app.route('/health')

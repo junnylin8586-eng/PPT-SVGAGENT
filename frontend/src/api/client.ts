@@ -341,4 +341,28 @@ export const api = {
   getFileUrl(filename: string): string {
     return `${API_BASE}/files/${filename}`
   },
+
+  // Custom templates (F3)
+  getCustomTemplates(): Promise<any> {
+    return request('/templates/custom')
+  },
+
+  uploadCustomTemplate(file: File, name?: string): Promise<any> {
+    const form = new FormData()
+    form.append('file', file)
+    if (name) form.append('name', name)
+    return request('/templates/upload', {
+      method: 'POST',
+      body: form,
+      headers: {},  // Let browser set Content-Type for multipart
+    })
+  },
+
+  getTemplatePreview(templateId: string): Promise<any> {
+    return request(`/templates/${templateId}/preview`)
+  },
+
+  deleteCustomTemplate(templateId: string): Promise<any> {
+    return request(`/templates/${templateId}`, { method: 'DELETE' })
+  },
 }
