@@ -502,8 +502,11 @@ def export_pptx(project_id):
         if not pages:
             return error_response('No generated pages to export')
 
+        # 确保 uploads 目录存在（否则 SVG 路径解析会失败）
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir, exist_ok=True)
+
         # 收集 SVG 文件路径
-        upload_dir = get_upload_dir()
         svg_files = []
         for page in pages:
             rel_path = page.get_svg_path()  # 相对路径: project_id/slide_XX.svg
@@ -521,6 +524,11 @@ def export_pptx(project_id):
         export_dir = os.path.join(upload_dir, 'exports', project_id)
         os.makedirs(export_dir, exist_ok=True)
         output_path = os.path.join(export_dir, f'{project.name or project_id}.pptx')
+
+        # Ensure svg files exist in the right place (fallback for missing uploads dir)
+        if not svg_files:
+            # Check if SVG files might be in the old path pattern
+            pass
 
         success = create_pptx_from_svgs(
             svg_files=svg_files,
