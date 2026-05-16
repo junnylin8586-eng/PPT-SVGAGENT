@@ -15,7 +15,7 @@ export default defineConfig({
     host: '127.0.0.1',
     proxy: {
       '/api': {
-        target: 'http://localhost:5031',
+        target: 'http://localhost:5201',
         changeOrigin: true,
         timeout: 300000,  // 5 min timeout for LLM calls (SSE streams)
         proxyTimeout: 300000,
