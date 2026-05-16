@@ -48,7 +48,15 @@ export default function NewProjectModal({ onClose }: Props) {
   const [outlineExpanded, setOutlineExpanded] = useState(false)
 
   // Editable outlines (user can modify after AI generation)
-  const [editableOutlines, setEditableOutlines] = useState<{outline_content: string; part: string; page_instruction?: string}[]>([])
+  const [editableOutlines, setEditableOutlines] = useState<Array<{outline_content: string; part: string; page_instruction?: string; page?: number; key_points?: string[]}>>([])
+
+  // Step 1b-2: Chat mode (F2)
+  const [outlineMode, setOutlineMode] = useState<'auto' | 'chat'>('auto')
+  const [chatMessages, setChatMessages] = useState<Array<{role: 'user'|'assistant'; content: string}>>([])
+  const [chatInput, setChatInput] = useState('')
+  const [chatLoading, setChatLoading] = useState(false)
+  const [chatError, setChatError] = useState('')
+  const [chatAccumulated, setChatAccumulated] = useState<ThemeOutline[]>([])
 
   // Sync AI-generated outlines into editableOutlines when SSE completes
   useEffect(() => {
@@ -56,6 +64,14 @@ export default function NewProjectModal({ onClose }: Props) {
       setEditableOutlines(aiOutlines)
     }
   }, [aiOutlines])
+
+  // Sync chat outlines into editableOutlines
+  useEffect(() => {
+    if (chatAccumulated.length > 0) {
+      setEditableOutlines(chatAccumulated)
+      setOutlineExpanded(true)
+    }
+  }, [chatAccumulated])
 
   // Step 2 fields
   const [templates, setTemplates] = useState<LayoutTemplate[]>([])
@@ -119,6 +135,47 @@ export default function NewProjectModal({ onClose }: Props) {
       const next = [...prev]
       next[index] = { ...next[index], [field]: value }
       return next
+    })
+  }
+
+  // F2: Chat-based outline generation
+  const handleChatSubmit = async () => {
+    if (!chatInput.trim()) return
+    const userMsg = chatInput.trim()
+    const newMessages = [...chatMessages, { role: 'user' as const, content: userMsg }]
+    setChatMessages(newMessages)
+    setChatInput('')
+    setChatLoading(true)
+    setChatError('')
+    setChatAccumulated([])
+    setOutlineExpanded(true)
+
+    const isFinal = userMsg.includes('确定') || userMsg.includes('可以了') || userMsg.includes('完成')
+
+    api.generateOutline(newMessages, isFinal).subscribe({
+      next(event: any) {
+        if (event.type === 'outline') {
+          setChatAccumulated(prev => {
+            const next = [...prev]
+            next[event.index] = event.data
+            return next
+          })
+        }
+        if (event.type === 'complete') {
+          // Merge accumulated outlines
+          const merged = (event.outlines || chatAccumulated).map((o: any, i: number) => ({
+            outline_content: o.outline_content || '',
+            part: o.part || '概述',
+            page_instruction: o.page_instruction || '',
+          }))
+          if (merged.length > 0) setEditableOutlines(merged)
+          setChatLoading(false)
+        }
+      },
+      error(err) {
+        setChatError(err.message || '网络错误')
+        setChatLoading(false)
+      },
     })
   }
 
@@ -218,72 +275,180 @@ export default function NewProjectModal({ onClose }: Props) {
                 />
               </div>
 
-              {/* AI Outline Analysis Button */}
+              {/* AI Outline Section (F2: auto + chat modes) */}
               <div className="ai-outline-section">
-                {!outlineExpanded ? (
+                {/* Mode toggle */}
+                <div className="outline-mode-toggle">
                   <button
-                    className="btn btn-ai-outline"
-                    onClick={handleAnalyze}
-                    disabled={!theme.trim() || analyzing}
+                    className={`mode-btn ${outlineMode === 'auto' ? 'active' : ''}`}
+                    onClick={() => { setOutlineMode('auto'); setOutlineExpanded(false); setChatMessages([]); setChatAccumulated([]); }}
                   >
-                    {analyzing ? (
-                      <><Loader size={14} className="spin" /> AI 分析中...</>
-                    ) : (
-                      <><Sparkles size={14} /> AI 生成大纲</>
-                    )}
+                    <Sparkles size={12} /> 自动生成
                   </button>
-                ) : null}
+                  <button
+                    className={`mode-btn ${outlineMode === 'chat' ? 'active' : ''}`}
+                    onClick={() => { setOutlineMode('chat'); setOutlineExpanded(false); }}
+                  >
+                    💬 对话生成
+                  </button>
+                </div>
 
-                {/* Inline Outline Preview */}
-                {outlineExpanded && (
-                  <div className="outline-preview">
-                    <div className="outline-header">
-                      <span className="outline-title">
-                        {aiOutlines.length > 0
-                          ? `AI 生成大纲（共 ${aiOutlines.length} 页）`
-                          : analyzing ? '正在分析主题内容...' : '分析结果'}
-                      </span>
-                      {aiOutlines.length > 0 && (
-                        <button
-                          className="outline-toggle"
-                          onClick={() => setOutlineExpanded(false)}
-                        >收起</button>
-                      )}
-                    </div>
+                {/* AUTO MODE */}
+                {outlineMode === 'auto' && (
+                  <>
+                    {!outlineExpanded ? (
+                      <button
+                        className="btn btn-ai-outline"
+                        onClick={handleAnalyze}
+                        disabled={!theme.trim() || analyzing}
+                      >
+                        {analyzing ? (
+                          <><Loader size={14} className="spin" /> AI 分析中...</>
+                        ) : (
+                          <><Sparkles size={14} /> AI 生成大纲</>
+                        )}
+                      </button>
+                    ) : null}
 
-                    {analyzing && aiOutlines.length === 0 && (
-                      <div className="outline-loading">
-                        <Loader size={16} className="spin-icon" color="var(--color-primary)" />
-                        <span>正在理解主题内容并生成结构...</span>
+                    {/* Inline Outline Preview */}
+                    {outlineExpanded && (
+                      <div className="outline-preview">
+                        <div className="outline-header">
+                          <span className="outline-title">
+                            {aiOutlines.length > 0
+                              ? `AI 生成大纲（共 ${aiOutlines.length} 页）`
+                              : analyzing ? '正在分析主题内容...' : '分析结果'}
+                          </span>
+                          {aiOutlines.length > 0 && (
+                            <button
+                              className="outline-toggle"
+                              onClick={() => setOutlineExpanded(false)}
+                            >收起</button>
+                          )}
+                        </div>
+
+                        {analyzing && aiOutlines.length === 0 && (
+                          <div className="outline-loading">
+                            <Loader size={16} className="spin-icon" color="var(--color-primary)" />
+                            <span>正在理解主题内容并生成结构...</span>
+                          </div>
+                        )}
+
+                        {analysisError && (
+                          <div className="outline-error">{analysisError}</div>
+                        )}
+
+                        {(aiOutlines.length > 0 || editableOutlines.length > 0) && (
+                          <div className="outline-list">
+                            {(aiOutlines.length > 0 ? aiOutlines : editableOutlines).map((o, i) => (
+                              <div key={i} className="outline-item">
+                                <span className="outline-num">{o.page || i + 1}</span>
+                                <div className="outline-content">
+                                  <input
+                                    className="outline-title-input"
+                                    value={editableOutlines[i]?.outline_content || o.outline_content || ''}
+                                    onChange={e => handleOutlineEdit(i, 'outline_content', e.target.value)}
+                                  />
+                                  <div className="outline-meta">
+                                    <span className="outline-part">[{o.part || '概述'}]</span>
+                                    {o.key_points && o.key_points.length > 0 && (
+                                      <span className="outline-points">{o.key_points.join(' · ')}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
+                  </>
+                )}
 
-                    {analysisError && (
-                      <div className="outline-error">{analysisError}</div>
-                    )}
-
-                    {aiOutlines.length > 0 && (
-                      <div className="outline-list">
-                        {aiOutlines.map((o, i) => (
-                          <div key={i} className="outline-item">
-                            <span className="outline-num">{o.page || i + 1}</span>
-                            <div className="outline-content">
-                              <input
-                                className="outline-title-input"
-                                value={editableOutlines[i]?.outline_content || o.outline_content || ''}
-                                onChange={e => handleOutlineEdit(i, 'outline_content', e.target.value)}
-                              />
-                              <div className="outline-meta">
-                                <span className="outline-part">[{o.part || '概述'}]</span>
-                                {o.key_points && o.key_points.length > 0 && (
-                                  <span className="outline-points">{o.key_points.join(' · ')}</span>
-                                )}
-                              </div>
-                            </div>
+                {/* CHAT MODE (F2) */}
+                {outlineMode === 'chat' && (
+                  <div className="chat-panel">
+                    {/* Chat messages */}
+                    {chatMessages.length > 0 && (
+                      <div className="chat-messages">
+                        {chatMessages.map((msg, i) => (
+                          <div key={i} className={`chat-msg chat-msg-${msg.role}`}>
+                            <span className="chat-msg-role">{msg.role === 'user' ? '我' : 'PPT小助手'}</span>
+                            <div className="chat-msg-bubble">{msg.content}</div>
                           </div>
                         ))}
                       </div>
                     )}
+
+                    {/* Outline preview in chat mode */}
+                    {(chatAccumulated.length > 0 || editableOutlines.length > 0) && (
+                      <div className="chat-outline-preview">
+                        <div className="outline-header">
+                          <span className="outline-title">
+                            {chatAccumulated.length > 0 ? `大纲草稿（共 ${chatAccumulated.length} 页）` : `已生成大纲（${editableOutlines.length} 页）`}
+                          </span>
+                        </div>
+                        <div className="outline-list">
+                          {(chatAccumulated.length > 0 ? chatAccumulated : editableOutlines).map((o: any, i) => (
+                            <div key={i} className="outline-item">
+                              <span className="outline-num">{o.page || i + 1}</span>
+                              <div className="outline-content">
+                                <input
+                                  className="outline-title-input"
+                                  value={o.outline_content || ''}
+                                  onChange={e => {
+                                    const updated = [...(chatAccumulated.length > 0 ? chatAccumulated : editableOutlines)]
+                                    updated[i] = { ...updated[i], outline_content: e.target.value }
+                                    setEditableOutlines(updated)
+                                    if (chatAccumulated.length > 0) setChatAccumulated(updated as any)
+                                  }}
+                                />
+                                <div className="outline-meta">
+                                  <span className="outline-part">[{o.part || '概述'}]</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Chat hint */}
+                    {chatMessages.length === 0 && (
+                      <div className="chat-hint">
+                        <p>👋 告诉我你的 PPT 主题，我可以帮你规划结构</p>
+                        <p className="chat-hint-example">例如："帮我做一个电网数字化转型的汇报PPT，5-7页"
+                        </p>
+                      </div>
+                    )}
+
+                    {chatError && <div className="outline-error">{chatError}</div>}
+
+                    {chatLoading && (
+                      <div className="outline-loading">
+                        <Loader size={16} className="spin-icon" color="var(--color-primary)" />
+                        <span>PPT小助手正在思考...</span>
+                      </div>
+                    )}
+
+                    {/* Chat input */}
+                    <div className="chat-input-row">
+                      <input
+                        className="form-input chat-input"
+                        placeholder="输入你的要求或修改意见..."
+                        value={chatInput}
+                        onChange={e => setChatInput(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleChatSubmit()}
+                        disabled={chatLoading}
+                      />
+                      <button
+                        className="btn btn-primary chat-send-btn"
+                        onClick={handleChatSubmit}
+                        disabled={!chatInput.trim() || chatLoading}
+                      >
+                        {chatLoading ? <Loader size={14} className="spin" /> : '发送'}
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -461,6 +626,24 @@ export default function NewProjectModal({ onClose }: Props) {
         .outline-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         .outline-part { font-size: 11px; color: var(--color-primary); background: #EBF5FF; padding: 1px 6px; border-radius: 10px; font-weight: 500; }
         .outline-points { font-size: 11px; color: #999; }
+        .outline-mode-toggle { display: flex; gap: 8px; align-self: flex-start; }
+        .mode-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--color-border); background: white; font-size: 12px; font-weight: 500; color: var(--color-text-muted); cursor: pointer; transition: all 0.15s; }
+        .mode-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+        .chat-panel { background: #F8FAFF; border: 1.5px solid #E2E8F0; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+        .chat-messages { display: flex; flex-direction: column; gap: 8px; max-height: 160px; overflow-y: auto; }
+        .chat-msg { display: flex; flex-direction: column; gap: 3px; }
+        .chat-msg-user { align-items: flex-end; }
+        .chat-msg-assistant { align-items: flex-start; }
+        .chat-msg-role { font-size: 10px; color: #999; font-weight: 600; }
+        .chat-msg-bubble { max-width: 85%; padding: 8px 12px; border-radius: 10px; font-size: 13px; line-height: 1.5; }
+        .chat-msg-user .chat-msg-bubble { background: var(--color-primary); color: white; border-bottom-right-radius: 2px; }
+        .chat-msg-assistant .chat-msg-bubble { background: white; border: 1px solid #E2E8F0; border-bottom-left-radius: 2px; }
+        .chat-hint { text-align: center; padding: 12px; color: #666; font-size: 13px; }
+        .chat-hint-example { font-size: 12px; color: #999; margin-top: 4px; }
+        .chat-outline-preview { background: white; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px; }
+        .chat-input-row { display: flex; gap: 8px; align-items: center; }
+        .chat-input { flex: 1; }
+        .chat-send-btn { padding: 9px 16px; white-space: nowrap; }
         .step-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: auto; padding-top: 8px; }
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
         .btn-primary { background: var(--color-primary); color: white; }

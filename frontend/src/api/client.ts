@@ -227,11 +227,8 @@ export const api = {
               }
 
               // ONLY process outline events — ignore started/analyzing progress events
-              // This is the critical fix: progress events were being treated as outlines,
-              // creating spurious empty pages (e.g. 64 blank pages before real content).
               if (raw.type !== 'outline') continue
 
-              // Extract outline from raw.data (the canonical location for 'outline' events)
               const data = raw.data || raw
               const event: ThemeOutline = {
                 page: data.page ?? data.page_index ?? 0,
@@ -242,6 +239,79 @@ export const api = {
                 layout_hint: data.layout_hint || '两栏',
               }
               subscriber.next(event)
+            } catch {}
+          }
+        }
+
+        const read = () => {
+          reader?.read().then(({ done, value }) => {
+            if (done) {
+              if (buffer) processLines(buffer)
+              subscriber.complete()
+              return
+            }
+            buffer += decoder.decode(value, { stream: true })
+            processLines(buffer)
+            if (!controller.signal.aborted) read()
+          })
+        }
+        read()
+      }).catch((err) => {
+        if (err.name !== 'AbortError') subscriber.error(err)
+      })
+
+      return { unsubscribe: () => controller.abort() }
+    })
+  },
+
+  // Multi-turn chat to generate PPT outline (SSE streaming)
+  generateOutline(messages: Array<{ role: string; content: string }>, isFinal = false): Observable<any> {
+    return new Observable((subscriber) => {
+      const controller = new AbortController()
+      let buffer = ''
+
+      fetch(`${API_BASE}/chat/generate-outline`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages, final: isFinal }),
+        signal: controller.signal,
+      }).then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const reader = res.body?.getReader()
+        const decoder = new TextDecoder()
+
+        const processLines = (text: string) => {
+          const lines = text.split('\n')
+          buffer = lines.pop() || ''
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue
+            try {
+              const raw = JSON.parse(line.slice(6))
+
+              if (raw.type === 'complete') {
+                subscriber.next({ type: 'complete', outlines: raw.outlines || [], total: raw.total || 0 })
+                subscriber.complete()
+                return
+              }
+              if (raw.type === 'error') {
+                subscriber.error(new Error(raw.message || 'AI generation failed'))
+                return
+              }
+              if (raw.type === 'outline') {
+                const data = raw.data || raw
+                subscriber.next({
+                  type: 'outline',
+                  index: raw.index ?? 0,
+                  data: {
+                    page: data.page ?? raw.index ?? 0,
+                    part: data.part || data.section || '',
+                    outline_content: data.outline_content || data.content || data.text || '',
+                    page_instruction: data.page_instruction || data.instruction || '',
+                    key_points: data.key_points ?? [],
+                    layout_hint: data.layout_hint || '两栏',
+                  },
+                })
+              }
             } catch {}
           }
         }
