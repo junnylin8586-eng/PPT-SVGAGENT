@@ -73,6 +73,13 @@ export default function NewProjectModal({ onClose }: Props) {
     }
   }, [chatAccumulated])
 
+  // Auto-fill first chat message when switching to chat mode with theme text
+  useEffect(() => {
+    if (outlineMode === 'chat' && theme.trim() && chatMessages.length === 0) {
+      setChatMessages([{ role: 'user', content: theme.trim() }])
+    }
+  }, [outlineMode])
+
   // Step 2 fields
   const [templates, setTemplates] = useState<LayoutTemplate[]>([])
   const [selectedTemplate, setSelectedTemplate] = useState('government_blue')
