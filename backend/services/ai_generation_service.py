@@ -45,62 +45,95 @@ def build_page_generation_prompt(
     primary_color: str = '#003371',
     font_family: str = 'system-ui',
     layout_style: str = 'balanced',
+    page_type: str = 'content',
+    total_pages: int = 1,
+    design_brief: str = '',
+    enrichment_context: str = '',
 ) -> str:
     """
-    构建页面生成提示词。
-    实际使用时从 ppt-master 的 prompts 加载结构化提示词模板。
-    """
-    template_svg_dir = os.path.join(
-        os.path.dirname(__file__), '..', 'ppt_master_engine',
-        'templates', 'layouts', template_name
-    )
+    构建页面生成提示词 — 增强版。
 
-    # 派生颜色
-    import re
-    def hex_to_rgb(hex_color: str) -> str:
-        h = hex_color.lstrip('#')
-        if len(h) == 6:
-            r, g, b = h[:2], h[2:4], h[4:6]
-            return f'#{int(r,16):02X}{int(g,16):02X}{int(b,16):02X}'
-        return hex_color
-    
-    # 计算强调色（略微调暗/调亮主色）
-    accent_color = '#00875A'  # 默认绿
-    
-    # 布局密度
+    整合了：智能内容优先级、页面类型感知、设计一致性约束、
+    视觉质量要求、上下文补充。
+    """
+    accent_color = '#00875A'
+    secondary_color = '#005691'
+
+    # Layout density hint
     layout_note = {
         'compact': '内容紧凑，字号可略小，留白少',
         'balanced': '留白适中，内容与留白比例约 7:3',
         'spacious': '大量留白，字号偏大，内容居中或左对齐',
     }.get(layout_style, '留白适中')
 
-    prompt = f"""你是一个专业的 PPT 幻灯片设计师。请根据以下信息生成一页幻灯片的 SVG 内容。
+    # Page type specific style guidance
+    from services.page_content_planner import get_page_type_style_guidance
+    type_guidance = get_page_type_style_guidance(page_type, template_name)
+
+    # Enrichment context (AI-generated supplement when content is thin)
+    enrichment_block = ''
+    if enrichment_context:
+        enrichment_block = f"""
+## 内容补充参考（基于上下文的自动补充）
+注意：以下是由AI基于本页上下文自动生成的内容补充建议，请将其与主要参考内容结合，
+生成一页信息充分的幻灯片。不要完全照搬以下内容，而应将其作为扩展思路的参考。
+
+{enrichment_context}
+"""
+
+    # Position context
+    position_hint = ''
+    if page_index == 1:
+        position_hint = '（这是项目的第一页——封面页）'
+    elif page_index == total_pages:
+        position_hint = '（这是项目的最后一页——结束页）'
+    elif page_index == 2:
+        position_hint = '（这是目录页，紧跟封面之后）'
+
+    prompt = f"""你是一个世界级的 PPT 幻灯片设计专家。请根据以下完整信息生成一页高质量的幻灯片 SVG 内容。
 
 ## 项目主题
-{project_idea}
+{project_idea[:500]}
 
-## 本页大纲
-{page_outline}
+## 本页内容（主要参考）
+{page_outline[:2000]}
 
+{enrichment_block}
 ## 模板风格
 {template_name}
 
-## 样式要求
-- 主色调：{primary_color}
-- 字体：{font_family}（如需中文字体请使用 Noto Sans SC 或 PingFang SC）
+## 页面信息
+- 当前页码：第 {page_index} 页 / 共 {total_pages} 页{position_hint}
+- 本页类型：{page_type}
 - 布局风格：{layout_note}
 
-## SVG 输出要求
-1. 输出完整的 SVG 文件内容，使用 viewBox="0 0 1280 720"
-2. 使用 font-family="{font_family}, Noto Sans SC, sans-serif"（英文+中文字体组合）
-3. 主色调使用 {primary_color}，强调色使用 {accent_color}，副色使用 #005691
-4. 不要使用无效的 SVG 属性（如 font-family 的中文名）
-5. 确保所有文字在 viewBox 范围内不溢出
-6. 只输出 SVG 代码，不要有 ```svg 标记，用纯粹的 <svg> 标签开始
-7. 背景用浅色（白色或 #F5F7FA），不要用深色背景
+## 样式参数
+- 主色调：{primary_color}
+- 强调色：{accent_color}
+- 副色：{secondary_color}
+- 字体：{font_family}（中文使用 Noto Sans SC 或 Microsoft YaHei）
 
-## 页面序号
-第 {page_index} 页
+{design_brief}
+
+{type_guidance}
+
+## SVG 技术规范（必须严格遵守）
+1. viewBox="0 0 1280 720"，width="1280" height="720"
+2. font-family="{font_family}, Noto Sans SC, Microsoft YaHei, sans-serif"
+3. 主色调 {primary_color}，强调色 {accent_color}，副色 {secondary_color}
+4. 禁止使用：foreignObject, animate*, script, mask, rgba(), @font-face
+5. 使用 fill-opacity / stroke-opacity 代替 rgba()
+6. 文字使用 <text> + <tspan> 实现换行，禁止使用 <foreignObject>
+7. 所有文字必须在 viewBox 范围内，不得溢出
+8. 只输出纯 SVG 代码，从 <svg> 标签开始，到 </svg> 标签结束
+9. 不要输出 ```svg 或 ``` 标记，不要有任何解释文字
+10. 确保 XML 格式完整正确，所有标签正确闭合
+
+## 输出质量标准
+- 信息密度适中，不要空洞（蓝底一行字）也不要过度拥挤
+- 视觉层次分明：标题→核心内容→辅助信息→装饰元素
+- 为不同类型的信息使用不同的视觉处理（如关键数据放大加色、列表用图标引导）
+- 如果内容中有数据、步骤、对比等信息，使用适合的视觉化表达
 """
     return prompt
 
@@ -149,7 +182,7 @@ def call_minimax_llm(prompt: str, model: str = 'MiniMax-M2.7', fallback_outline:
     )
 
     try:
-        with urllib.request.urlopen(req, timeout=120) as resp:
+        with urllib.request.urlopen(req, timeout=180) as resp:
             result = json.loads(resp.read().decode('utf-8'))
             return result['choices'][0]['message']['content']
     except Exception as e:
@@ -198,23 +231,58 @@ def generate_page_svg(
     primary_color: str = '#003371',
     font_family: str = 'system-ui',
     layout_style: str = 'balanced',
+    total_pages: int = 1,
+    design_brief: str = '',
+    neighbor_summaries: Optional[List[str]] = None,
 ) -> Dict[str, str]:
     """
-    生成单页 SVG 内容。
+    生成单页 SVG 内容 — 增强版。
+
+    自动判断内容优先级：比较 outline_content 和 page_instruction 的详细程度，
+    以更详细的作为主要参考内容，另一份作为辅助参考。
+    当两者内容都较简短时，利用上下文自动补充。
 
     Args:
         project_idea: 项目主题描述
-        outline_content: 页面标题（简短）
-        page_instruction: 页面完整提示词（核心主题+内容+布局+风格）
-                          优先级高于 outline_content
+        outline_content: 本页大纲
+        page_instruction: 本页详细描述
+        total_pages: 项目总页数
+        design_brief: 项目统一设计规范
+        neighbor_summaries: 相邻页面摘要（用于上下文补充）
     Returns:
         {'svg_content': str, 'svg_path': str}
     """
-    # 两者结合：outline_content 是用户指定的大纲（主要依据），
-    # description_content 是详细描述（辅助参考）
-    effective_outline = outline_content
-    if page_instruction:
-        effective_outline = f"{outline_content}\n\n补充参考：{page_instruction}"
+    from services.page_content_planner import plan_page_content, build_unified_design_brief
+
+    # Step 1: Smart content planning — determine primary vs auxiliary
+    plan = plan_page_content(
+        outline_content=outline_content,
+        description_content=page_instruction,
+        page_index=page_index - 1,  # 0-based for planner
+        total_pages=total_pages,
+        project_idea=project_idea,
+        neighbor_summaries=neighbor_summaries,
+    )
+
+    effective_outline = plan['primary_content']
+    if plan['auxiliary_content']:
+        effective_outline = (
+            f"【主要参考内容】\n{plan['primary_content']}\n\n"
+            f"【辅助参考内容】\n{plan['auxiliary_content']}"
+        )
+
+    # Step 2: Unified design brief (cached per project, but computed here)
+    if not design_brief:
+        design_brief = build_unified_design_brief(
+            project_idea=project_idea,
+            template_name=template_name,
+            primary_color=primary_color,
+        )
+
+    # Step 3: Enrichment context (AI supplement when content is thin)
+    enrichment = plan['enrichment_context'] if plan['needs_enrichment'] else ''
+
+    # Step 4: Build enhanced prompt
     prompt = build_page_generation_prompt(
         project_idea=project_idea,
         page_outline=effective_outline,
@@ -223,6 +291,16 @@ def generate_page_svg(
         primary_color=primary_color,
         font_family=font_family,
         layout_style=layout_style,
+        page_type=plan['page_type'],
+        total_pages=total_pages,
+        design_brief=design_brief,
+        enrichment_context=enrichment,
+    )
+
+    logger.info(
+        f'[AI Gen] Page {page_index}/{total_pages} type={plan["page_type"]} '
+        f'detail={plan["detail_level"]} enrich={plan["needs_enrichment"]} '
+        f'primary={plan["primary_source"]}'
     )
 
     response = call_minimax_llm(prompt, fallback_outline=effective_outline)
@@ -232,7 +310,7 @@ def generate_page_svg(
         logger.warning(f'[AI Gen] No SVG extracted for page {page_index}, using fallback')
         svg_content = get_fallback_svg(outline_content, page_index)
 
-    # 保存到文件
+    # Save to file
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
         svg_path = os.path.join(output_dir, f'slide_{page_index:02d}.svg')
@@ -252,4 +330,5 @@ def save_svg_for_page(project_id: str, page_index: int, svg_content: str) -> str
     with open(svg_path, 'w', encoding='utf-8') as f:
         f.write(svg_content)
     # 返回相对路径（相对于 uploads/projects/）
+    # Use forward slash for URL compatibility (os.path.normpath handles fs access)
     return f'{project_id}/slide_{page_index:02d}.svg'

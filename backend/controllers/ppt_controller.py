@@ -8,7 +8,7 @@ import uuid
 import json
 import re
 from datetime import datetime
-from flask import Blueprint, request, jsonify, current_app, send_from_directory, Response
+from flask import Blueprint, request, jsonify, current_app, send_from_directory, Response, stream_with_context
 from werkzeug.utils import secure_filename
 from pathlib import Path
 from services.theme_analysis_service import analyze_theme_stream, analyze_theme_sync
@@ -323,7 +323,7 @@ def trigger_generation(project_id):
             # Check if page already has valid SVG on disk
             existing_svg = None
             if p.svg_path:
-                svg_abs = os.path.join(upload_dir, 'projects', p.svg_path)
+                svg_abs = os.path.normpath(os.path.join(upload_dir, 'projects', p.svg_path))
                 if os.path.exists(svg_abs) and os.path.getsize(svg_abs) > 200:
                     existing_svg = p.svg_path
             
@@ -376,12 +376,36 @@ def trigger_generation(project_id):
         primary_color = project.primary_color or '#003371'
         font_family = project.font_family or 'system-ui'
         layout_style = project.layout_style or 'balanced'
+        total_pages = len(pages)
         results = []
+
+        # Build unified design brief once for the whole project
+        from services.page_content_planner import build_unified_design_brief
+        design_brief = build_unified_design_brief(
+            project_idea=project_idea,
+            template_name=template_name,
+            primary_color=primary_color,
+        )
+
+        # Collect page summaries for neighbor context
+        page_summaries = {}
+        for p in pages:
+            oc = p.get_outline_content() or ''
+            dc = p.get_description_content() or ''
+            page_summaries[p.order_index] = (oc[:200] + ' ' + dc[:200]).strip()
 
         for page in pages:
             page_idea = page.get_outline_content() or ''
             page_instruction = page.get_description_content() or ''
-            # Skip pages with truly empty outlines (defense against SSE parsing bugs)
+
+            # Build neighbor summaries for context enrichment
+            idx = page.order_index
+            neighbor_summaries = [
+                page_summaries.get(idx - 1, ''),
+                page_summaries.get(idx + 1, ''),
+            ]
+
+            # Skip pages with truly empty outlines (but allow AI enrichment)
             if not page_idea or not page_idea.strip():
                 logger.warning(f'[PPT] Task {task_id}: Skipping page {page.order_index} - empty outline')
                 page.status = 'SKIPPED'
@@ -400,6 +424,9 @@ def trigger_generation(project_id):
                         primary_color=primary_color,
                         font_family=font_family,
                         layout_style=layout_style,
+                        total_pages=total_pages,
+                        design_brief=design_brief,
+                        neighbor_summaries=neighbor_summaries,
                     )
                     # 保存相对路径
                     svg_filename = os.path.basename(result['svg_path'])
@@ -482,6 +509,33 @@ def regenerate_single_page(project_id, page_id):
         page_instruction = page.get_description_content() or ''
         logger.info(f'[PPT] Regenerate page {page.order_index} with outline={repr(page_idea[:50]) if page_idea else None}')
 
+        # Get total pages and neighbor summaries for context
+        all_pages = Page.query.filter_by(
+            project_id=project_id, is_deleted=False
+        ).order_by(Page.order_index).all()
+        total_pages = len(all_pages)
+
+        # Build neighbor summaries
+        idx = page.order_index
+        neighbor_summaries = []
+        for offset in [-1, 1]:
+            neighbor_idx = idx + offset
+            if 0 <= neighbor_idx < len(all_pages):
+                np = all_pages[neighbor_idx]
+                noc = np.get_outline_content() or ''
+                ndc = np.get_description_content() or ''
+                neighbor_summaries.append((noc[:200] + ' ' + ndc[:200]).strip())
+            else:
+                neighbor_summaries.append('')
+
+        # Build unified design brief
+        from services.page_content_planner import build_unified_design_brief
+        design_brief = build_unified_design_brief(
+            project_idea=project_idea,
+            template_name=template_name,
+            primary_color=primary_color,
+        )
+
         result = generate_page_svg(
             project_idea=project_idea,
             outline_content=page_idea,
@@ -492,6 +546,9 @@ def regenerate_single_page(project_id, page_id):
             primary_color=primary_color,
             font_family=font_family,
             layout_style=layout_style,
+            total_pages=total_pages,
+            design_brief=design_brief,
+            neighbor_summaries=neighbor_summaries,
         )
 
         svg_filename = os.path.basename(result['svg_path'])
@@ -517,87 +574,85 @@ def regenerate_single_page(project_id, page_id):
 
 @ppt_bp.route('/projects/<project_id>/export', methods=['POST'])
 def export_pptx(project_id):
-    """
-    POST /api/ppt/projects/<id>/export - SVG → PPTX via Path D
-    Returns SSE with progress events: {type: 'progress'|'complete'|'error'}
-    """
+    """POST /api/ppt/projects/<id>/export - SVG → PPTX via Path D"""
     project = Project.query.filter_by(id=project_id, is_deleted=False).first()
     if not project:
         return not_found('Project')
 
-    def _export_stream():
-        try:
-            data = request.get_json() or {}
-            page_ids = data.get('page_ids')
+    try:
+        data = request.get_json() or {}
+        page_ids = data.get('page_ids')  # optional filter
 
-            yield 'data: ' + json.dumps({'type': 'progress', 'stage': 'collecting', 'progress': 0, 'message': '正在收集 SVG 文件...'}) + '\n\n'
+        # 获取所有 GENERATED 页面
+        query = Page.query.filter_by(
+            project_id=project_id, is_deleted=False
+        ).filter(Page.status.in_(['GENERATED', 'DESCRIPTION_GENERATED']))
 
-            query = Page.query.filter_by(
-                project_id=project_id, is_deleted=False
-            ).filter(Page.status.in_(['GENERATED', 'DESCRIPTION_GENERATED']))
-            if page_ids:
-                query = query.filter(Page.id.in_(page_ids))
+        if page_ids:
+            query = query.filter(Page.id.in_(page_ids))
 
-            pages = query.order_by(Page.order_index).all()
-            if not pages:
-                yield 'data: ' + json.dumps({'type': 'error', 'message': 'No generated pages to export'}) + '\n\n'
-                return
+        pages = query.order_by(Page.order_index).all()
+        if not pages:
+            return error_response('No generated pages to export')
 
-            # 收集 SVG
-            upload_dir = get_upload_dir()
-            if not os.path.exists(upload_dir):
-                os.makedirs(upload_dir, exist_ok=True)
+        # 收集 SVG 文件路径
+        upload_dir = get_upload_dir()
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir, exist_ok=True)
 
-            svg_files = []
-            for page in pages:
-                rel_path = page.get_svg_path()
-                if rel_path:
-                    svg_abs = os.path.join(upload_dir, 'projects', rel_path)
-                    if os.path.exists(svg_abs):
-                        svg_files.append(Path(svg_abs))
-                    else:
-                        logger.warning(f'[PPT] SVG not found: {svg_abs}')
+        svg_files = []
+        for page in pages:
+            rel_path = page.get_svg_path()
+            if rel_path:
+                svg_abs = os.path.normpath(os.path.join(upload_dir, 'projects', rel_path))
+                if os.path.exists(svg_abs):
+                    svg_files.append(Path(svg_abs))
+                else:
+                    logger.warning(f'[PPT] SVG not found: {svg_abs}')
 
-            if not svg_files:
-                yield 'data: ' + json.dumps({'type': 'error', 'message': 'No SVG files found'}) + '\n\n'
-                return
+        if not svg_files:
+            return error_response('No SVG files found')
 
-            yield 'data: ' + json.dumps({'type': 'progress', 'stage': 'converting', 'progress': 10, 'total': len(svg_files), 'message': f'正在转换 {len(svg_files)} 页...'}) + '\n\n'
+        # 输出 PPTX 到项目目录
+        export_dir = os.path.join(upload_dir, 'exports', project_id)
+        os.makedirs(export_dir, exist_ok=True)
+        # Sanitize filename: Windows forbids < > : " / \ | ? * and trailing dots/spaces
+        safe_name = re.sub(r'[<>:"/\\|?*]', '_', (project.name or project_id))
+        safe_name = safe_name.rstrip('. ').strip() or project_id
+        output_path = os.path.join(export_dir, f'{safe_name}.pptx')
 
-            # 导出
-            export_dir = os.path.join(upload_dir, 'exports', project_id)
-            os.makedirs(export_dir, exist_ok=True)
-            output_path = os.path.join(export_dir, f'{project.name or project_id}.pptx')
+        result = create_pptx_from_svgs(
+            svg_files=svg_files,
+            output_path=output_path,
+            canvas_format='ppt169',
+            use_native_shapes=True,
+            transition='fade',
+        )
 
-            success = create_pptx_from_svgs(
-                svg_files=svg_files,
-                output_path=output_path,
-                canvas_format='ppt169',
-                use_native_shapes=True,
-                transition='fade',
-            )
+        if result['success']:
+            rel_path = f'exports/{project_id}/{os.path.basename(output_path)}'
+            resp_data = {
+                'pptx_path': rel_path,
+                'size_kb': os.path.getsize(output_path) // 1024,
+                'page_count': len(svg_files) - len(result.get('skipped', [])),
+                'total_pages': len(svg_files) + len(result.get('skipped', [])),
+            }
+            if result.get('skipped'):
+                resp_data['skipped_slides'] = result['skipped']
+                resp_data['skipped_filenames'] = result.get('sanitize_failures', [])
+                logger.warning(
+                    f'[PPT] Export completed with {len(result["skipped"])} skipped slide(s): '
+                    f'{result["skipped"]}'
+                )
+            if result.get('native_fallback'):
+                resp_data['render_mode'] = 'image_fallback'
+            return success_response(resp_data)
+        else:
+            return error_response(result.get('error') or 'PPTX creation failed', 500)
 
-            if success:
-                rel_path = f'exports/{project_id}/{os.path.basename(output_path)}'
-                yield 'data: ' + json.dumps({
-                    'type': 'complete',
-                    'pptx_path': rel_path,
-                    'size_kb': os.path.getsize(output_path) // 1024,
-                    'page_count': len(svg_files),
-                    'message': f'导出成功！{len(svg_files)} 页已转换为 PPTX'
-                }) + '\n\n'
-            else:
-                yield 'data: ' + json.dumps({'type': 'error', 'message': 'PPTX creation failed'}) + '\n\n'
-
-        except Exception as e:
-            logger.error(f"[PPT] Export failed: {e}")
-            yield 'data: ' + json.dumps({'type': 'error', 'message': str(e)}) + '\n\n'
-
-    return Response(
-        _export_stream(),
-        mimetype='text/event-stream',
-        headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'}
-    )
+    except Exception as e:
+        logger.error(f"[PPT] Export failed: {e}")
+        return error_response(str(e), 500)
 
 
 # ============================================================================

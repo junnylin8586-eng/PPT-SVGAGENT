@@ -4,10 +4,13 @@ SVG Export Service - Path D: SVG → DrawingML → PPTX
 Wraps ppt-master engine for programmatic invocation from Flask.
 Phase 1.5: Minimal end-to-end SVG→PPTX pipeline test.
 """
+import io
 import os
+import re
 import sys
 import logging
 import tempfile
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Optional
 
@@ -37,6 +40,126 @@ def _validate_svg_xml(svg_path: Path) -> tuple[bool, str]:
         return False, str(e)
 
 
+def _sanitize_svg_for_export(svg_path: Path, verbose: bool = False) -> Path:
+    """
+    Create a sanitized in-memory copy of an SVG for safe export.
+
+    Fixes applied (on a temp copy, never mutates the original):
+    1. Strip AI commentary/preamble before <svg> tag
+    2. Fix bare `&` not part of valid XML entities
+    3. Strip invalid `]]>` artifacts
+    4. Ensure proper XML namespace declarations
+    5. Wrap bare text in CDATA where safe
+
+    Returns:
+        Path to a temp-file copy of the sanitized SVG.
+        Caller is responsible for cleanup (the temp file is in the system
+        temp dir and will be cleaned on next reboot).
+    """
+    import tempfile
+    import re
+
+    content = svg_path.read_text(encoding='utf-8')
+    original_size = len(content)
+
+    # 1. Locate the first <svg tag and discard everything before it
+    svg_start = content.find('<svg')
+    if svg_start == -1:
+        # File has no <svg> tag — likely a truncated AI response
+        raise ValueError(f'No <svg> tag found in {svg_path.name}')
+    if svg_start > 0:
+        content = content[svg_start:]
+
+    # 2. Locate the matching </svg> closing tag (find the LAST one)
+    svg_close = content.rfind('</svg>')
+    if svg_close == -1:
+        raise ValueError(f'Missing </svg> closing tag in {svg_path.name}')
+    content = content[:svg_close + len('</svg>')]
+
+    # 3. Strip XML comments (bare & inside comments are valid XML but
+    #    confuse entity-fix regexps; extract-and-restore pattern)
+    comments: list[str] = []
+    def _save_comment(m):
+        comments.append(m.group(0))
+        return f'__COMMENT_{len(comments) - 1}__'
+    content = re.sub(r'<!--[\s\S]*?-->', _save_comment, content)
+
+    # 4. Fix bare & not part of valid XML entity references
+    #    Valid: &amp; &lt; &gt; &quot; &apos; &#NN; &#xNN;
+    content = re.sub(r'&(?![a-zA-Z#][a-zA-Z0-9#]*;)', '&amp;', content)
+
+    # 5. Strip invalid ]]> artifacts (XML reserved, invalid outside CDATA)
+    content = content.replace(']]>', ']]&gt;')
+
+    # 6. Deduplicate attributes — AI sometimes emits duplicate attrs like x="0" x="60"
+    #    XML spec forbids duplicate attributes on the same element.
+    def _dedup_attrs(match):
+        tag_body = match.group(0)
+        attr_pattern = re.compile(r'(\s)(\w[\w:-]*)(\s*=\s*["\'][^"\']*["\'])', re.DOTALL)
+        seen_attrs = set()
+        result = []
+        last_end = 0
+        for m in attr_pattern.finditer(tag_body):
+            name = m.group(2)
+            if name.lower() in seen_attrs:
+                # Advance past this duplicate so final append skips it
+                last_end = m.end()
+                continue
+            seen_attrs.add(name.lower())
+            result.append(tag_body[last_end:m.start()])
+            result.append(m.group(0))
+            last_end = m.end()
+        result.append(tag_body[last_end:])
+        return ''.join(result)
+
+    content = re.sub(r'<(?!\?|!--|!\[CDATA)[^>]+>', _dedup_attrs, content)
+
+    # 7. Restore comments
+    for i, cmt in enumerate(comments):
+        content = content.replace(f'__COMMENT_{i}__', cmt)
+
+    # 8. Validate the result is well-formed XML
+    parse_err = None
+    try:
+        ET.parse(io.StringIO(content))
+    except Exception as e1:
+        parse_err = str(e1)
+
+    if parse_err:
+        logger.warning(
+            f'[SVG Export] {svg_path.name} still invalid after sanitize: {parse_err}. '
+            'Trying aggressive fix...'
+        )
+        lines = content.split('\n')
+        cleaned = []
+        for line in lines:
+            stripped = line.strip()
+            if stripped and not (stripped.startswith('<') or stripped.startswith('</')):
+                continue
+            line = re.sub(r'<(?!\?|!--|!\[CDATA)[^>]+>', _dedup_attrs, line)
+            cleaned.append(line)
+        content = '\n'.join(cleaned)
+        try:
+            ET.parse(io.StringIO(content))
+        except Exception as e2:
+            raise ValueError(
+                f'Cannot fix {svg_path.name}: SVG is irreparably malformed: {e2}'
+            )
+
+    if verbose and len(content) != original_size:
+        delta = len(content) - original_size
+        logger.info(
+            f'[SVG Export] Sanitized {svg_path.name}: '
+            f'{original_size} → {len(content)} bytes ({"+" if delta > 0 else ""}{delta})'
+        )
+
+    # Write sanitized content to a temp file (won't overwrite original)
+    fd, tmp_path = tempfile.mkstemp(suffix='.svg', prefix='sanitized_')
+    os.close(fd)
+    Path(tmp_path).write_text(content, encoding='utf-8')
+    return Path(tmp_path)
+
+
 def create_pptx_from_svgs(
     svg_files: list[Path],
     output_path: Path,
@@ -45,7 +168,7 @@ def create_pptx_from_svgs(
     transition: str = 'fade',
     transition_duration: float = 0.5,
     verbose: bool = True,
-) -> bool:
+) -> dict:
     """
     Create PPTX from SVG files using ppt-master engine.
 
@@ -60,61 +183,141 @@ def create_pptx_from_svgs(
         verbose: Print progress info.
 
     Returns:
-        True if successful, False otherwise.
+        dict with keys:
+            success (bool): True if PPTX was created.
+            skipped (list[int]): 1-based slide indices that were skipped.
+            sanitize_failures (list[str]): Names of files that failed sanitization.
+            native_fallback (bool): True if image fallback was used.
+            error (str or None): Error message if success is False.
     """
     from svg_to_pptx import create_pptx_with_native_svg
 
+    result = {
+        'success': False,
+        'skipped': [],
+        'sanitize_failures': [],
+        'native_fallback': False,
+        'error': None,
+    }
+
     if not svg_files:
-        logger.error('[SVG Export] No SVG files provided')
-        return False
+        result['error'] = 'No SVG files provided'
+        logger.error(f'[SVG Export] {result["error"]}')
+        return result
 
-    # Validate all SVG files before processing
-    invalid_files = []
-    for f in svg_files:
+    # Validate and sanitize all SVG files before processing.
+    # Gracefully skip irreparable files — do NOT fail the entire export.
+    sanitized_svgs: list[Path] = []
+    skipped_indices: list[int] = []
+    for idx, f in enumerate(svg_files):
         if not f.exists():
-            logger.error(f'[SVG Export] SVG file not found: {f}')
-            return False
-        valid, err = _validate_svg_xml(f)
-        if not valid:
-            logger.warning(f'[SVG Export] Malformed SVG (will use fallback): {f.name} — {err}')
-            invalid_files.append(f)
+            logger.warning(f'[SVG Export] SVG file not found, skipping: {f}')
+            skipped_indices.append(idx + 1)
+            continue
+        try:
+            sanitized = _sanitize_svg_for_export(f, verbose)
+            sanitized_svgs.append(sanitized)
+        except Exception as e:
+            logger.warning(
+                f'[SVG Export] Skipping {f.name}: sanitization failed ({e}). '
+                'Export will continue without this slide.'
+            )
+            result['sanitize_failures'].append(f.name)
+            skipped_indices.append(idx + 1)
 
-    # If any SVG is invalid, try to fix it with lxml/html cleanup
-    if invalid_files:
-        for f in invalid_files:
-            _try_fix_malformed_svg(f)
+    result['skipped'] = skipped_indices
+
+    if not sanitized_svgs:
+        result['error'] = 'All SVG files failed sanitization'
+        logger.error(f'[SVG Export] {result["error"]}')
+        return result
+
+    # Use sanitized copies for the entire pipeline
+    svg_files = sanitized_svgs
 
     try:
         if verbose:
-            logger.info(f'[SVG Export] Creating PPTX with {len(svg_files)} slides...')
+            total_expected = len(svg_files) + len(skipped_indices)
+            logger.info(
+                f'[SVG Export] Creating PPTX with {len(svg_files)}/{total_expected} slides '
+                f'({len(skipped_indices)} skipped)...'
+            )
             logger.info(f'[SVG Export] Output: {output_path}')
             logger.info(f'[SVG Export] Canvas: {canvas_format}, Native shapes: {use_native_shapes}')
 
-        # Pass Path objects directly (function expects list[Path])
+        # Pre-validate: test each SVG for native conversion compatibility
+        bad_slides = []
+        if use_native_shapes:
+            for idx, svg_path in enumerate(svg_files):
+                try:
+                    _pre_check_svg_native(svg_path, idx + 1)
+                except Exception as pre_err:
+                    logger.warning(
+                        f'[SVG Export] Slide {idx+1} ({svg_path.name}) native check failed: {pre_err}. '
+                        'Will use image fallback for this slide.'
+                    )
+                    bad_slides.append(idx)
+
         svg_path_objects = [f if isinstance(f, Path) else Path(f) for f in svg_files]
-        success = create_pptx_with_native_svg(
-            svg_files=svg_path_objects,
-            output_path=output_path if isinstance(output_path, Path) else Path(output_path),
-            canvas_format=canvas_format,
-            verbose=verbose,
-            use_compat_mode=True,   # PNG fallback for old Office
-            use_native_shapes=use_native_shapes,  # True = DrawingML (Path D)
-            transition=transition,
-            transition_duration=transition_duration,
-        )
+
+        if not bad_slides:
+            success = create_pptx_with_native_svg(
+                svg_files=svg_path_objects,
+                output_path=output_path if isinstance(output_path, Path) else Path(output_path),
+                canvas_format=canvas_format,
+                verbose=verbose,
+                use_compat_mode=True,
+                use_native_shapes=use_native_shapes,
+                transition=transition,
+                transition_duration=transition_duration,
+            )
+        else:
+            logger.info(f'[SVG Export] {len(bad_slides)} slide(s) need image fallback, using compat mode')
+            result['native_fallback'] = True
+            success = create_pptx_with_native_svg(
+                svg_files=svg_path_objects,
+                output_path=output_path if isinstance(output_path, Path) else Path(output_path),
+                canvas_format=canvas_format,
+                verbose=verbose,
+                use_compat_mode=True,
+                use_native_shapes=False,
+                transition=transition,
+                transition_duration=transition_duration,
+            )
 
         if success:
             logger.info(f'[SVG Export] PPTX created: {output_path}')
+            result['success'] = True
         else:
-            logger.error('[SVG Export] create_pptx_with_native_svg returned False')
+            result['error'] = 'create_pptx_with_native_svg returned False'
+            logger.error(f'[SVG Export] {result["error"]}')
 
-        return success
+        return result
 
     except Exception as e:
+        result['error'] = str(e)
         logger.error(f'[SVG Export] Failed: {e}')
         import traceback
         traceback.print_exc()
-        return False
+        return result
+
+    finally:
+        # Clean up sanitized temp SVGs to avoid disk accumulation
+        for f in sanitized_svgs:
+            try:
+                if f.exists():
+                    f.unlink()
+            except Exception:
+                pass
+
+
+def _pre_check_svg_native(svg_path: Path, slide_num: int = 1) -> None:
+    """
+    Test whether an SVG can be converted to native DrawingML shapes.
+    Raises exception if conversion would fail.
+    """
+    from svg_to_pptx.drawingml_converter import convert_svg_to_slide_shapes
+    convert_svg_to_slide_shapes(svg_path, slide_num=slide_num, verbose=False)
 
 
 def _try_fix_malformed_svg(svg_path: Path) -> bool:
