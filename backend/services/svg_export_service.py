@@ -27,6 +27,10 @@ def _validate_svg_xml(svg_path: Path) -> tuple[bool, str]:
     """Validate SVG is well-formed XML. Returns (is_valid, error_msg)."""
     try:
         import xml.etree.ElementTree as ET
+        content = svg_path.read_text(encoding='utf-8')
+        # Reject truncated SVG (missing </svg> closing tag — AI preamble or cut-off response)
+        if '</svg>' not in content:
+            return False, 'missing closing </svg> tag'
         ET.parse(str(svg_path))
         return True, ''
     except Exception as e:
@@ -113,32 +117,72 @@ def create_pptx_from_svgs(
         return False
 
 
-def _try_fix_malformed_svg(svg_path: Path):
+def _try_fix_malformed_svg(svg_path: Path) -> bool:
     """
     Attempt to fix malformed SVG by:
-    1. Reading as text and stripping known bad patterns
-    2. Removing unescaped HTML entity issues
-    3. Writing back a cleaned version
+    1. Stripping AI commentary/preamble (leading text before <svg tag)
+    2. Handling truncated SVGs (missing </svg> — replaced with fallback)
+
+    Returns True if file was fixed, False otherwise.
     """
     try:
         content = svg_path.read_text(encoding='utf-8')
         original = content
 
-        # Strip any <!-- --> HTML comments that might contain -->
+        # Case 1: File has <svg> tag somewhere (preamble stripped, or clean start)
+        # but no closing </svg> → AI gave partial response, replace with fallback
+        if '</svg>' not in content:
+            import re
+            # Extract page index from filename like "slide_03.svg"
+            m = re.search(r'slide_(\d+)\.svg', svg_path.name)
+            page_index = int(m.group(1)) if m else 1
+
+            # Try to find an outline in the file itself (AI wrote it there before crashing)
+            # Look for Chinese text patterns that might be outline content
+            outline_match = re.search(r'["\']([^"\']{10,50})["\']\s*$', content, re.MULTILINE)
+            fallback_content = outline_match.group(1) if outline_match else ''
+
+            fallback_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <rect width="1280" height="720" fill="#003371"/>
+  <text x="640" y="320" font-family="system-ui, sans-serif" font-size="52"
+        fill="white" text-anchor="middle" font-weight="bold">第 {page_index} 页</text>
+  <text x="640" y="400" font-family="system-ui, sans-serif" font-size="24"
+        fill="#AACCEE" text-anchor="middle">{fallback_content or '内容生成中...'}</text>
+  <rect x="560" y="440" width="160" height="6" rx="3" fill="#00875A"/>
+</svg>'''
+            svg_path.write_text(fallback_svg, encoding='utf-8')
+            logger.info(f'[SVG Export] Replaced truncated SVG with fallback: {svg_path.name}')
+            return True
+
+        # Case 2: File has both <svg> and </svg> but is malformed → strip preamble
         import re
+        svg_start_match = re.search(r'<svg\s', content)
+        if not svg_start_match:
+            return False
+
+        svg_start = svg_start_match.start()
+        if svg_start > 0:
+            content = content[svg_start:]
+            logger.info(f'[SVG Export] Stripped {svg_start} bytes of preamble from {svg_path.name}')
+
+        # Strip XML comments <!-- ... -->
         content = re.sub(r'<!--[\s\S]*?-->', '', content)
 
-        # Fix common issues: bare & not followed by entity/amp;
-        # Only fix & that aren't part of valid entities
+        # Remove ]]> (XML reserved, invalid outside CDATA — AI artifact)
+        content = content.replace(']]>', '')
+
+        # Fix bare & not followed by valid entity
         content = re.sub(r'&(?![a-zA-Z#][a-zA-Z0-9#]*;)', '&amp;', content)
 
-        # Remove any remaining obvious XML-illegal chars but keep foreignObject HTML
-        # Write back only if changed
         if content != original:
             svg_path.write_text(content, encoding='utf-8')
             logger.info(f'[SVG Export] Fixed malformed SVG: {svg_path.name}')
+            return True
+
+        return False
     except Exception as e:
         logger.warning(f'[SVG Export] Could not fix SVG {svg_path.name}: {e}')
+        return False
 
 
 def quality_check_svg(svg_file: Path) -> dict:

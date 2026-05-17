@@ -17,6 +17,7 @@ export default function ExportDialog({ open, projectId, projectName, pages, onCl
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(pages.map(p => p.page_id)))
   const [exporting, setExporting] = useState(false)
   const [result, setResult] = useState<{ pptx_path: string; size_kb: number; page_count: number } | null>(null)
+  const [progress, setProgress] = useState<{ stage: string; progress: number; message: string; total?: number } | null>(null)
   const [error, setError] = useState('')
 
   if (!open) return null
@@ -32,9 +33,47 @@ export default function ExportDialog({ open, projectId, projectName, pages, onCl
     if (selectedIds.size === 0) { setError('请至少选择一页'); return }
     setExporting(true)
     setError('')
+    setProgress({ stage: 'preparing', progress: 0, message: '正在准备...' })
+
     try {
-      const res = await api.exportPptx(projectId, Array.from(selectedIds))
-      setResult(res.data || res)
+      const res = await fetch(`/api/ppt/projects/${projectId}/export`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ page_ids: Array.from(selectedIds) }),
+      })
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+
+      const reader = res.body?.getReader()
+      if (!reader) throw new Error('Stream not available')
+
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''  // keep incomplete line
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const event = JSON.parse(line.slice(6))
+              if (event.type === 'progress') {
+                setProgress(event)
+              } else if (event.type === 'complete') {
+                setResult(event)
+                setProgress({ stage: 'done', progress: 100, message: '导出完成！' })
+              } else if (event.type === 'error') {
+                setError(event.message || '导出失败')
+              }
+            } catch { /* skip malformed JSON */ }
+          }
+        }
+      }
     } catch (e: any) {
       setError(e.message || '导出失败')
     } finally {
@@ -75,6 +114,24 @@ export default function ExportDialog({ open, projectId, projectName, pages, onCl
         <div className="modal-body">
           {!result ? (
             <>
+              {progress && !error && (
+                <div className="export-progress">
+                  <div className="progress-bar-track">
+                    <div
+                      className="progress-bar-fill"
+                      style={{
+                        width: `${progress.progress || 50}%`,
+                        transition: 'width 0.5s ease',
+                      }}
+                    />
+                  </div>
+                  <p className="progress-message">
+                    {exporting ? <Loader size={12} className="spin" /> : null}
+                    {progress.message}
+                    {progress.total ? ` (${progress.total} 页)` : ''}
+                  </p>
+                </div>
+              )}
               <p className="export-hint">选择要导出的页面（{selectedIds.size} / {pages.length}）</p>
               <div className="page-checklist">
                 {pages.map((page, idx) => (
@@ -154,6 +211,10 @@ export default function ExportDialog({ open, projectId, projectName, pages, onCl
         .check-badge.gen { background: #D1FAE5; color: #065F46; }
         .check-badge.pending { background: #FEF3C7; color: #92400E; }
         .export-error { color: #DC2626; font-size: 13px; margin-top: 10px; }
+        .export-progress { margin-bottom: 14px; }
+        .progress-bar-track { width: 100%; height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+        .progress-bar-fill { height: 100%; background: var(--color-primary); border-radius: 3px; min-width: 4px; }
+        .progress-message { font-size: 12px; color: var(--color-text-muted); display: flex; align-items: center; gap: 6px; }
         .export-result { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 0; text-align: center; }
         .result-icon { width: 72px; height: 72px; background: #D1FAE5; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .export-result h3 { font-size: 18px; font-weight: 600; color: var(--color-text); }

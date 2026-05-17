@@ -119,4 +119,9 @@ export const settingsApi = {
   checkConnection(payload: CheckConnectionPayload): Promise<{ success: true; data: { ok: boolean; message: string } }> {
     return post(`${SETTINGS_API}/check`, payload)
   },
+
+  /** 重置所有设置回 .env 默认值 */
+  resetSettings(): Promise<{ success: true; data: { message: string; settings: SettingsDTO } }> {
+    return post(`${SETTINGS_API}/reset`, {})
+  },
 }

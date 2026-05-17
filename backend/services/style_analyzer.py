@@ -55,14 +55,8 @@ class StyleAnalyzer:
     def analyze_pptx(self, pptx_path: str, thumb_size=(400, 225)) -> dict:
         """
         Analyze a PPTX file and return structured design metadata.
-        
-        Args:
-            pptx_path: Path to the PPTX file
-            thumb_size: Thumbnail size (width, height)
-            
-        Returns:
-            dict with keys: primary_color, secondary_color, font_title, 
-                          font_body, layout_type, mood, slides_preview
+        Falls back to visual (thumbnail) analysis when python-pptx can't
+        extract enough metadata from slide masters.
         """
         parser = PPTParser(pptx_path=pptx_path)
         metadata = parser.get_metadata()
@@ -92,8 +86,31 @@ class StyleAnalyzer:
             'first_slide_bg': metadata.get('slides', [{}])[0].get('bg_color', '#FFFFFF') if metadata.get('slides') else '#FFFFFF',
         }
         
+        # Detect sparse metadata — need visual fallback
+        fonts_sparse = len(context['title_fonts']) == 0 and len(context['body_fonts']) == 0
+        colors_sparse = len(context['colors']) <= 1
+        need_visual_fallback = fonts_sparse or colors_sparse
+        
+        if need_visual_fallback:
+            logger.info('[StyleAnalyzer] Sparse metadata detected (fonts/colors empty), using visual fallback')
+            context['visual_fallback'] = True
+            context['hint'] = 'Python-pptx could not extract font/color from slide masters. Please analyze the thumbnail images visually to determine the design style.'
+        
         # Call AI for style analysis
         style_result = self._call_ai_analysis(context)
+        
+        # If AI analysis also fails, use sensible defaults derived from actual colors found
+        if not style_result or 'primary_color' not in style_result:
+            extracted_color = context.get('colors', ['#003371'])[0] or '#003371'
+            style_result = {
+                'primary_color': extracted_color,
+                'secondary_color': '#005691',
+                'font_title': 'Noto Sans SC',
+                'font_body': 'Noto Sans SC',
+                'layout_type': context.get('layout_type', '两栏'),
+                'mood': '专业',
+            }
+            logger.info(f'[StyleAnalyzer] Using python-pptx extracted color as fallback: {extracted_color}')
         
         # Merge results
         result = {
@@ -105,6 +122,7 @@ class StyleAnalyzer:
             'mood': style_result.get('mood', '专业'),
             'slide_count': context['slide_count'],
             'slides_preview': thumbs_b64,
+            'parse_method': 'visual_fallback' if need_visual_fallback else 'pptx_metadata',
         }
         
         return result

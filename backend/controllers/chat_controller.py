@@ -46,12 +46,31 @@ SYSTEM_PROMPT = """你是一个PPT大纲助手，名字叫PPT小助手。
 ```"""
 
 
+CHAT_HISTORY_MAX_TURNS = 10  # 每 turn = 2 条消息 (user + assistant), 保留最近 10 轮 = 20 条
+
+
 def _build_messages(theme_text: str, history: list = None) -> list:
-    """Build messages for the LLM, incorporating conversation history."""
+    """
+    Build messages for the LLM, incorporating conversation history.
+    Auto-truncates when history exceeds CHAT_HISTORY_MAX_TURNS turns.
+    """
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+
     if history:
-        for h in history:
+        recent = list(history)
+        max_messages = CHAT_HISTORY_MAX_TURNS * 2  # user + assistant per turn
+        if len(recent) > max_messages:
+            # Keep most recent, add truncation notice
+            dropped = len(recent) - max_messages
+            recent = recent[-max_messages:]
+            messages.append({
+                "role": "system",
+                "content": f"[注意：早期 {dropped} 条对话已省略，以下是最近的 {max_messages} 条对话]"
+            })
+            logger.info(f"[Chat] History truncated: dropped {dropped} messages, kept {max_messages}")
+        for h in recent:
             messages.append({"role": h.get("role", "user"), "content": h.get("content", "")})
+
     messages.append({"role": "user", "content": theme_text})
     return messages
 

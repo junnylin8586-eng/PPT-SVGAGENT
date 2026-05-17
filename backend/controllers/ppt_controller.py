@@ -312,11 +312,32 @@ def trigger_generation(project_id):
         if not pages:
             return error_response('No pages to generate. Create pages first.')
 
-        # Reset ALL pages to PENDING before generation so polling can track progress
+        # Reset pages to PENDING before generation, BUT skip pages that already
+        # have valid SVG files (resume from interruption)
+        upload_dir = get_upload_dir()
+        project_svg_dir = os.path.join(upload_dir, 'projects', project_id)
+        os.makedirs(project_svg_dir, exist_ok=True)
+        
+        pending_pages = []
         for p in pages:
-            p.status = 'PENDING'
-            p.svg_path = None  # Clear stale SVG path
+            # Check if page already has valid SVG on disk
+            existing_svg = None
+            if p.svg_path:
+                svg_abs = os.path.join(upload_dir, 'projects', p.svg_path)
+                if os.path.exists(svg_abs) and os.path.getsize(svg_abs) > 200:
+                    existing_svg = p.svg_path
+            
+            if existing_svg and p.status == 'GENERATED':
+                # Already generated - keep as is (resume from interruption)
+                logger.info(f'[PPT] Task {task_id}: Page {p.order_index} already generated, skipping')
+                results.append({'page_id': p.id, 'svg_path': existing_svg, 'page_index': p.order_index, 'resumed': True})
+            else:
+                p.status = 'PENDING'
+                p.svg_path = None
+                pending_pages.append(p)
         db.session.commit()
+        
+        pages = pending_pages  # Only regenerate pages that need it
 
         task_id = f"ppt_gen_{uuid.uuid4().hex[:8]}"
         logger.info(f"[PPT] Task {task_id}: Generating {len(pages)} pages with template={template_name}")
@@ -356,9 +377,6 @@ def trigger_generation(project_id):
         font_family = project.font_family or 'system-ui'
         layout_style = project.layout_style or 'balanced'
         results = []
-        upload_dir = get_upload_dir()
-        project_svg_dir = os.path.join(upload_dir, 'projects', project_id)
-        os.makedirs(project_svg_dir, exist_ok=True)
 
         for page in pages:
             page_idea = page.get_outline_content() or ''
@@ -368,31 +386,49 @@ def trigger_generation(project_id):
                 logger.warning(f'[PPT] Task {task_id}: Skipping page {page.order_index} - empty outline')
                 page.status = 'SKIPPED'
                 continue
-            try:
-                result = generate_page_svg(
-                    project_idea=project_idea,
-                    outline_content=page_idea,
-                    page_instruction=page_instruction,
-                    template_name=template_name,
-                    page_index=page.order_index + 1,
-                    output_dir=project_svg_dir,
-                    primary_color=primary_color,
-                    font_family=font_family,
-                    layout_style=layout_style,
-                )
-                # 保存相对路径
-                svg_filename = os.path.basename(result['svg_path'])
-                svg_rel_path = f'{project_id}/{svg_filename}'
-                page.svg_path = svg_rel_path
-                page.status = 'GENERATED'
-                results.append({'page_id': page.id, 'svg_path': svg_rel_path, 'page_index': page.order_index})
-                # Commit after each page so polling sees progress
+
+            generated = False
+            for attempt in range(2):  # Max 2 attempts (initial + 1 retry)
                 try:
-                    db.session.commit()
-                except Exception:
-                    pass
-            except Exception as gen_err:
-                logger.error(f'[PPT] Task {task_id}: Page {page.order_index} generation failed: {gen_err}', exc_info=True)
+                    result = generate_page_svg(
+                        project_idea=project_idea,
+                        outline_content=page_idea,
+                        page_instruction=page_instruction,
+                        template_name=template_name,
+                        page_index=page.order_index + 1,
+                        output_dir=project_svg_dir,
+                        primary_color=primary_color,
+                        font_family=font_family,
+                        layout_style=layout_style,
+                    )
+                    # 保存相对路径
+                    svg_filename = os.path.basename(result['svg_path'])
+                    svg_rel_path = f'{project_id}/{svg_filename}'
+                    page.svg_path = svg_rel_path
+                    # 更新页面内容描述（供后续编辑使用）
+                    if result.get('outline_content'):
+                        page.set_outline_content(result['outline_content'])
+                    if result.get('description_content'):
+                        page.description_content = result['description_content']
+                    page.status = 'GENERATED'
+                    results.append({'page_id': page.id, 'svg_path': svg_rel_path, 'page_index': page.order_index, 'attempt': attempt + 1})
+                    # Commit after each page so polling sees progress
+                    try:
+                        db.session.commit()
+                    except Exception:
+                        pass
+                    generated = True
+                    break
+                except Exception as gen_err:
+                    if attempt == 0:
+                        logger.warning(f'[PPT] Task {task_id}: Page {page.order_index} failed on attempt 1, retrying... Error: {gen_err}')
+                        # Brief delay before retry
+                        import time
+                        time.sleep(1)
+                    else:
+                        logger.error(f'[PPT] Task {task_id}: Page {page.order_index} generation failed after retry: {gen_err}', exc_info=True)
+            
+            if not generated:
                 page.status = 'FAILED'
                 # Commit individual page status so polling can see progress
                 try:
@@ -481,76 +517,87 @@ def regenerate_single_page(project_id, page_id):
 
 @ppt_bp.route('/projects/<project_id>/export', methods=['POST'])
 def export_pptx(project_id):
-    """POST /api/ppt/projects/<id>/export - SVG → PPTX via Path D"""
+    """
+    POST /api/ppt/projects/<id>/export - SVG → PPTX via Path D
+    Returns SSE with progress events: {type: 'progress'|'complete'|'error'}
+    """
     project = Project.query.filter_by(id=project_id, is_deleted=False).first()
     if not project:
         return not_found('Project')
 
-    try:
-        data = request.get_json() or {}
-        page_ids = data.get('page_ids')  # optional filter
+    def _export_stream():
+        try:
+            data = request.get_json() or {}
+            page_ids = data.get('page_ids')
 
-        # 获取所有 GENERATED 页面
-        query = Page.query.filter_by(
-            project_id=project_id, is_deleted=False
-        ).filter(Page.status.in_(['GENERATED', 'DESCRIPTION_GENERATED']))
+            yield 'data: ' + json.dumps({'type': 'progress', 'stage': 'collecting', 'progress': 0, 'message': '正在收集 SVG 文件...'}) + '\n\n'
 
-        if page_ids:
-            query = query.filter(Page.id.in_(page_ids))
+            query = Page.query.filter_by(
+                project_id=project_id, is_deleted=False
+            ).filter(Page.status.in_(['GENERATED', 'DESCRIPTION_GENERATED']))
+            if page_ids:
+                query = query.filter(Page.id.in_(page_ids))
 
-        pages = query.order_by(Page.order_index).all()
-        if not pages:
-            return error_response('No generated pages to export')
+            pages = query.order_by(Page.order_index).all()
+            if not pages:
+                yield 'data: ' + json.dumps({'type': 'error', 'message': 'No generated pages to export'}) + '\n\n'
+                return
 
-        # 确保 uploads 目录存在（否则 SVG 路径解析会失败）
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir, exist_ok=True)
+            # 收集 SVG
+            upload_dir = get_upload_dir()
+            if not os.path.exists(upload_dir):
+                os.makedirs(upload_dir, exist_ok=True)
 
-        # 收集 SVG 文件路径
-        svg_files = []
-        for page in pages:
-            rel_path = page.get_svg_path()  # 相对路径: project_id/slide_XX.svg
-            if rel_path:
-                svg_abs = os.path.join(upload_dir, 'projects', rel_path)
-                if os.path.exists(svg_abs):
-                    svg_files.append(Path(svg_abs))  # Path 对象，svg_export_service 需要
-                else:
-                    logger.warning(f'[PPT] SVG not found: {svg_abs}')
+            svg_files = []
+            for page in pages:
+                rel_path = page.get_svg_path()
+                if rel_path:
+                    svg_abs = os.path.join(upload_dir, 'projects', rel_path)
+                    if os.path.exists(svg_abs):
+                        svg_files.append(Path(svg_abs))
+                    else:
+                        logger.warning(f'[PPT] SVG not found: {svg_abs}')
 
-        if not svg_files:
-            return error_response('No SVG files found')
+            if not svg_files:
+                yield 'data: ' + json.dumps({'type': 'error', 'message': 'No SVG files found'}) + '\n\n'
+                return
 
-        # 输出 PPTX 到项目目录
-        export_dir = os.path.join(upload_dir, 'exports', project_id)
-        os.makedirs(export_dir, exist_ok=True)
-        output_path = os.path.join(export_dir, f'{project.name or project_id}.pptx')
+            yield 'data: ' + json.dumps({'type': 'progress', 'stage': 'converting', 'progress': 10, 'total': len(svg_files), 'message': f'正在转换 {len(svg_files)} 页...'}) + '\n\n'
 
-        # Ensure svg files exist in the right place (fallback for missing uploads dir)
-        if not svg_files:
-            # Check if SVG files might be in the old path pattern
-            pass
+            # 导出
+            export_dir = os.path.join(upload_dir, 'exports', project_id)
+            os.makedirs(export_dir, exist_ok=True)
+            output_path = os.path.join(export_dir, f'{project.name or project_id}.pptx')
 
-        success = create_pptx_from_svgs(
-            svg_files=svg_files,
-            output_path=output_path,
-            canvas_format='ppt169',
-            use_native_shapes=True,
-            transition='fade',
-        )
+            success = create_pptx_from_svgs(
+                svg_files=svg_files,
+                output_path=output_path,
+                canvas_format='ppt169',
+                use_native_shapes=True,
+                transition='fade',
+            )
 
-        if success:
-            rel_path = f'exports/{project_id}/{os.path.basename(output_path)}'
-            return success_response({
-                'pptx_path': rel_path,
-                'size_kb': os.path.getsize(output_path) // 1024,
-                'page_count': len(svg_files),
-            })
-        else:
-            return error_response('PPTX creation failed', 500)
+            if success:
+                rel_path = f'exports/{project_id}/{os.path.basename(output_path)}'
+                yield 'data: ' + json.dumps({
+                    'type': 'complete',
+                    'pptx_path': rel_path,
+                    'size_kb': os.path.getsize(output_path) // 1024,
+                    'page_count': len(svg_files),
+                    'message': f'导出成功！{len(svg_files)} 页已转换为 PPTX'
+                }) + '\n\n'
+            else:
+                yield 'data: ' + json.dumps({'type': 'error', 'message': 'PPTX creation failed'}) + '\n\n'
 
-    except Exception as e:
-        logger.error(f"[PPT] Export failed: {e}")
-        return error_response(str(e), 500)
+        except Exception as e:
+            logger.error(f"[PPT] Export failed: {e}")
+            yield 'data: ' + json.dumps({'type': 'error', 'message': str(e)}) + '\n\n'
+
+    return Response(
+        _export_stream(),
+        mimetype='text/event-stream',
+        headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'}
+    )
 
 
 # ============================================================================

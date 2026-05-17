@@ -187,6 +187,42 @@ export default function SettingsModal({ open, onClose, onSaved }: Props) {
     }
   }
 
+  const [resetting, setResetting] = useState(false)
+
+  const handleReset = async () => {
+    if (!confirm('确定要重置所有设置为 .env 默认值吗？所有自定义配置将被清除。')) return
+    setResetting(true)
+    setError('')
+    try {
+      const res = await settingsApi.resetSettings()
+      const d = res.data.settings
+      setSettings({
+        ai_provider_format: d.ai_provider_format || 'minimax',
+        api_base_url: '',
+        api_key: '',
+        minimax_api_key: '',
+        minimax_api_base: d.minimax_api_base || '',
+        text_model: d.text_model || 'MiniMax-M2.7',
+        image_model: d.image_model || 'image-01',
+        text_model_source: '',
+        image_model_source: '',
+        image_resolution: d.image_resolution || '2K',
+        image_aspect_ratio: d.image_aspect_ratio || '16:9',
+        output_language: d.output_language || 'zh',
+        enable_text_reasoning: d.enable_text_reasoning ?? false,
+        text_thinking_budget: d.text_thinking_budget ?? 1024,
+        enable_image_reasoning: d.enable_image_reasoning ?? false,
+        image_thinking_budget: d.image_thinking_budget ?? 1024,
+      })
+      setTestResult(null)
+      onSaved?.()
+    } catch (e: any) {
+      setError('重置失败: ' + e.message)
+    } finally {
+      setResetting(false)
+    }
+  }
+
   const handleSave = async () => {
     setSaving(true)
     setError('')
@@ -507,8 +543,12 @@ export default function SettingsModal({ open, onClose, onSaved }: Props) {
         {/* Footer */}
         {!loading && (
           <div className="modal-footer">
+            <button className="btn btn-outline" onClick={handleReset} disabled={resetting} title="清空所有自定义配置，恢复使用 .env 默认值">
+              {resetting ? <><Loader size={13} className="spin" /> 重置中...</> : '重置为默认'}
+            </button>
+            <div style={{ flex: 1 }} />
             <button className="btn btn-outline" onClick={onClose}>取消</button>
-            <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
+            <button className="btn btn-primary" onClick={handleSave} disabled={saving || resetting}>
               {saving ? <><Loader size={13} className="spin" /> 保存中...</> : '保存设置'}
             </button>
           </div>

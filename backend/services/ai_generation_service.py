@@ -158,16 +158,22 @@ def call_minimax_llm(prompt: str, model: str = 'MiniMax-M2.7', fallback_outline:
 
 
 def extract_svg_from_response(response: str) -> Optional[str]:
-    """从 AI 响应中提取 SVG 代码"""
-    # 尝试找到 <svg 开头到 </svg> 结尾的部分
-    match = re.search(r'<svg[\s\S]*?</svg>', response, re.IGNORECASE)
-    if match:
-        svg = match.group(0)
-        # 清理可能的 markdown 标记
-        svg = re.sub(r'^```(?:svg)?\s*', '', svg, flags=re.IGNORECASE).strip()
-        svg = re.sub(r'\s*```$', '', svg).strip()
-        return svg
-    return None
+    """从 AI 响应中提取 SVG 代码
+    
+    使用多匹配策略：找到所有 <svg>...</svg> 配对后选最长的。
+    避免 AI 描述文本中提及 </svg> 导致过早截断。
+    """
+    svg_pattern = re.compile(r'<svg[\s\S]*?</svg>', re.IGNORECASE)
+    matches = list(svg_pattern.finditer(response))
+    if not matches:
+        return None
+    # 选最长匹配 — AI 生成的完整 SVG 内容最长，描述性提及 </svg> 很短
+    best = max(matches, key=lambda m: len(m.group(0)))
+    svg = best.group(0)
+    # 清理可能的 markdown 标记
+    svg = re.sub(r'^```(?:svg)?\s*', '', svg, flags=re.IGNORECASE).strip()
+    svg = re.sub(r'\s*```$', '', svg).strip()
+    return svg
 
 
 def get_fallback_svg(outline_content: str, page_index: int = 1) -> str:

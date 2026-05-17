@@ -466,8 +466,11 @@ export default function NewProjectModal({ onClose }: Props) {
             <div className="step-footer">
               <button
                 className="btn btn-primary"
-                onClick={() => name.trim() && theme.trim() ? setStep(2) : setError('请填写完整信息')}
-              >
+                onClick={() => {
+                  if (!name.trim()) { setError('请输入项目名称'); return }
+                  if (!theme.trim() && editableOutlines.length === 0) { setError('请输入主题描述或生成大纲'); return }
+                  setStep(2)
+                }}>
                 下一步：选模板 <ArrowRight size={15} />
               </button>
             </div>

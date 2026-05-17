@@ -99,8 +99,8 @@ def update_settings():
 @settings_bp.route('/check', methods=['POST'])
 def check_connection():
     """
-    POST /api/settings/check - 验证 API Key 是否可用
-    Body: { "api_key": "...", "api_base_url": "...", "provider": "minimax" }
+    POST /api/settings/check - 验证 API Key 是否可用（多 provider 支持）
+    Body: { "api_key": "...", "api_base_url": "...", "provider": "minimax"|openai|gemini|anthropic|deepseek|kimi }
     """
     try:
         data = request.get_json() or {}
@@ -111,20 +111,88 @@ def check_connection():
         if not api_key:
             return err('api_key is required')
 
-        from services.ai_providers import get_text_provider
-        from services.ai_providers.text import MiniMaxTextProvider
-
         if provider == 'minimax':
+            from services.ai_providers.text.minimax_provider import MiniMaxTextProvider
             p = MiniMaxTextProvider(api_key=api_key, api_base=api_base, model='MiniMax-M2.7')
             result = p.generate_text('Say "OK" if you can read this.', thinking_budget=0)
             if 'OK' in result.upper():
-                return success({'ok': True, 'message': 'API Key Valid'})
+                return success({'ok': True, 'message': 'MiniMax API Key Valid'})
+            return err(f'Unexpected response: {result[:50]}')
+
+        if provider in ('openai', 'deepseek', 'kimi'):
+            from services.ai_providers.text import OpenAITextProvider
+            base = api_base or {'openai': 'https://api.openai.com/v1',
+                                'deepseek': 'https://api.deepseek.com/v1',
+                                'kimi': 'https://api.moonshot.cn/v1'}.get(provider, '')
+            p = OpenAITextProvider(api_key=api_key, api_base=base, model='gpt-4')
+            result = p.generate_text('Say "OK" if you can read this.', thinking_budget=0)
+            if 'OK' in result.upper():
+                return success({'ok': True, 'message': f'{provider.title()} API Key Valid'})
+            return err(f'Unexpected response: {result[:50]}')
+
+        if provider == 'gemini':
+            from services.ai_providers.text import GenAITextProvider
+            p = GenAITextProvider(api_key=api_key, api_base=api_base, model='gemini-2.0-flash')
+            result = p.generate_text('Say "OK" if you can read this.', thinking_budget=0)
+            if 'OK' in result.upper():
+                return success({'ok': True, 'message': 'Gemini API Key Valid'})
+            return err(f'Unexpected response: {result[:50]}')
+
+        if provider == 'anthropic':
+            from services.ai_providers.text import AnthropicTextProvider
+            p = AnthropicTextProvider(api_key=api_key, api_base=api_base, model='claude-3-haiku-20240307')
+            result = p.generate_text('Say "OK" if you can read this.', thinking_budget=0)
+            if 'OK' in result.upper():
+                return success({'ok': True, 'message': 'Anthropic API Key Valid'})
             return err(f'Unexpected response: {result[:50]}')
 
         return err(f'Unsupported provider: {provider}')
 
     except Exception as e:
         logger.error(f"[Settings] Connection check failed: {e}")
+        return err(str(e), 500)
+
+
+@settings_bp.route('/reset', methods=['POST'])
+def reset_settings():
+    """
+    POST /api/settings/reset - 重置所有设置回 .env 默认值
+    将所有 DB 中非 NULL 的配置字段清空为 NULL，恢复使用 .env 默认值。
+    """
+    try:
+        settings = Settings.get_settings()
+        # 清空所有用户自定义配置（设为 NULL → 使用 .env 默认值）
+        nullable_fields = [
+            'ai_provider_format', 'api_base_url', 'api_key',
+            'minimax_api_key', 'minimax_api_base',
+            'text_model', 'image_model', 'text_model_source', 'image_model_source',
+            'image_caption_model', 'image_caption_model_source',
+            'image_resolution', 'image_aspect_ratio',
+            'max_description_workers', 'max_image_workers',
+            'output_language',
+            'text_api_key', 'text_api_base_url',
+            'image_api_key', 'image_api_base_url',
+            'image_caption_api_key', 'image_caption_api_base_url',
+            'mineru_api_base', 'mineru_token',
+            'baidu_api_key', 'kimi_api_key',
+            'lazyllm_api_keys',
+            'description_generation_mode', 'description_extra_fields', 'image_prompt_extra_fields',
+        ]
+        for field in nullable_fields:
+            setattr(settings, field, None)
+        # 推理模式恢复默认
+        settings.enable_text_reasoning = False
+        settings.text_thinking_budget = 1024
+        settings.enable_image_reasoning = False
+        settings.image_thinking_budget = 1024
+
+        db.session.commit()
+        logger.info("[Settings] Reset to .env defaults")
+        return success({'message': 'Settings reset to .env defaults', 'settings': settings.to_dict()})
+
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"[Settings] Reset failed: {e}")
         return err(str(e), 500)
 
 
